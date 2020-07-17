@@ -1,31 +1,3 @@
-# def read_file(file):
-
-# lis = []
-# file = open("weibo.txt", "r")
-# for line in file:
-#     line_ls = line.split()
-#     if line == "\n":
-#         lis.append(line)
-#     else:
-#         item = line_ls[1]
-#         if item == "0":
-#             line_ls[1] = "O"
-#         lis.append(line_ls)
-#     # print(line_ls)
-# file.close()
-# for item in lis:
-#     print(item)
-# file2 = open("weibo2.txt", "w")
-# for item in lis:
-#     if item == "\n":
-#         file2.write(item)
-#         file2.write("\n")
-#     else:
-#         s = item[0] + "\t" + item[1]
-#         file2.write(s)
-#         file2.write("\n")
-# file2.close()
-
 def read_file(file):
     tag_list = []
     word_ls = []
@@ -59,6 +31,7 @@ def read_file(file):
     print(word_ls)
     for i in range(len(word_ls)):
         if word_ls[i].endswith("0"):
+            pass
             
 
 
