@@ -28,14 +28,34 @@ def read_file(file):
 
     print(tag_dic)
     # word_ls = sorted(set(word_ls))
-    print(word_ls)
+    print(len(word_ls))
+    # print(word_ls)
+    lsl = []
+    temp = ""
     for i in range(len(word_ls)):
-        if word_ls[i].endswith("0"):
-            pass
-            
+        char_ls = [char for char in word_ls[i]]
+        # print(char_ls)
+        # s = "".join(char_ls[0])
+        temp += char_ls[0]
+        # print(s)
+    # for i in range(len(word_ls)):
+        if word_ls[i].endswith("0") and i > 0:
+            lsl.append(temp[:-1])
+            temp = temp[-1] + ""
+            # print(True)
+            # # print(word_ls[i].split())
+            # print([char for char in word_ls[i]])
 
+    lsl = sorted(set(lsl))
+    print(lsl)
+    print(len(lsl))
 
+    print(lsl.index("一"))
+    print(lsl.index("龟"))
+    print(lsl[lsl.index("一"):lsl.index("龟")])
     # print(ij)
+    dic = {k:v for k, v in enumerate(lsl)}
+    print(dic)
 read_file("Weibo_NER_Corpus.train")
 
 
