@@ -68,3 +68,22 @@ def read_file(file):
 read_file("Weibo_NER_Corpus.train")
 
 
+def load_char_embeddings(File):
+    f = open(File,'r')
+    char_dict = {}
+    for line in f:
+        splitLines = line.split()
+        char = splitLines[0]
+        wordEmbedding = np.array([float(value) for value in splitLines[1:]])
+        char_dict[char] = wordEmbedding
+    return char_dict
+
+g = load_char_embeddings("vec.txt")
+# print(g)
+i=0
+for k in g.keys():
+    i += 1
+    print(k, "\t", g[k])
+    print(type(k))
+    if i == 10:
+        break
