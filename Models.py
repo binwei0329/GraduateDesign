@@ -1,3 +1,5 @@
+import numpy as np
+import regex as re
 def read_file(file):
     tag_list = []
     word_ls = []
@@ -6,24 +8,23 @@ def read_file(file):
             if line == "\n":
                 continue
             else:
+                # Resolve the encoding problem.
                 if "\u200b" in line:
-                    str.replace("\u200b", " ", " ")
+                    line = re.sub("\u200b", "X", line)
                 ls = line.split("\t")
-                # str.replace("\u200b"," ")
-                # if ls.index("\u200b") >= 0:
-                #     str.replace("\u200b", " ")
+
                 word_ls.append(ls[0])
                 tag_list.append(ls[-1])
 
     tag_list = sorted(set(tag_list))
-    ij = tag_list[-1]
-    # tag_list = tag_list[:-1]
 
+    # Exclude the last tag symbol, "X".
+    tag_list = tag_list[:-1]
+
+    # Clean the items in the tag_list and construct a dictionary out of the list.
     for i in range(len(tag_list)):
         s = tag_list[i].rstrip("\n")
         tag_list[i] = s
-    print(tag_list)
-
     tag_dic = {n:m for m, n in enumerate(tag_list)}
 
     print(tag_dic)
@@ -32,8 +33,10 @@ def read_file(file):
     # print(word_ls)
     lsl = []
     temp = ""
+    char = []
     for i in range(len(word_ls)):
         char_ls = [char for char in word_ls[i]]
+        char.extend(char_ls)
         # print(char_ls)
         # s = "".join(char_ls[0])
         temp += char_ls[0]
@@ -47,16 +50,21 @@ def read_file(file):
             # print([char for char in word_ls[i]])
 
     lsl = sorted(set(lsl))
-    print(lsl)
+    # print(lsl)
     print(len(lsl))
 
-    print(lsl.index("一"))
-    print(lsl.index("龟"))
-    print(lsl[lsl.index("一"):lsl.index("龟")])
+    # print(lsl.index("一"))
+    # print(lsl.index("龟"))
+    # print(lsl[lsl.index("一"):lsl.index("龟")])
     # print(ij)
-    dic = {k:v for k, v in enumerate(lsl)}
-    print(dic)
+    dic = {v:k for k, v in enumerate(lsl)}
+    # print(dic)
+    l = sorted(set(char))
+    print(len(l[l.index("一"):l.index("龟")]))
+    print(len(l))
+
+
+
 read_file("Weibo_NER_Corpus.train")
 
 
-# print("\u200b")
