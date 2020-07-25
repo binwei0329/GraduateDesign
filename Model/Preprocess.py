@@ -47,6 +47,7 @@ def read_file(file):
 
     return tag_dic, char, word_dic
 
+
 def load_char_embeddings(file):
     f = open(file,'r')
     char_embed_dict = {}
@@ -56,13 +57,3 @@ def load_char_embeddings(file):
         wordEmbedding = np.array([float(value) for value in splitLines[1:]])
         char_embed_dict[char] = wordEmbedding
     return char_embed_dict
-
-# g = load_char_embeddings("../Data/vec.txt")
-# print(g)
-# i=0
-# for k in g.keys():
-#     i += 1
-#     print(k, "\t", g[k])
-#     print(type(k))
-#     if i == 10:
-#         break
