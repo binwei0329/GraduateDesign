@@ -1,21 +1,32 @@
+#! usr/bin/env python3
+# -*- coding:utf-8 -*-
+
 import numpy as np
 import regex as re
 
 def read_file(file):
     tag_list = []
     word_list = []
+    sentence_list = []
+    sentence = []
+    tags, tag = [], ""
     with open(file) as f:
         for line in f:
             if line == "\n":
+                sentence_list.append(sentence)
+                tags.append(tag.split())
+                sentence = []
+                tag = ""
                 continue
             else:
                 # Resolve the encoding problem.
                 if "\u200b" in line:
                     line = re.sub("\u200b", "X", line)
                 ls = line.split("\t")
-
+                sentence.append([char for char in ls[0]][0])
                 word_list.append(ls[0])
                 tag_list.append(ls[-1])
+                tag += ls[-1]
 
     tag_list = sorted(set(tag_list))
 
@@ -45,7 +56,7 @@ def read_file(file):
     word_dic = {v:k for k, v in enumerate(word)}
     char = sorted(set(char))
 
-    return tag_dic, char, word_dic
+    return tag_dic, char, word_dic, sentence_list, tags
 
 
 def load_char_embeddings(file):
