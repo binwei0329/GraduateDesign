@@ -54,10 +54,37 @@ class BiLSTM_CRF(nn.module):
 
 
     def init_hidden(self):
-        return (torch.randn(2, 1, self.hidden_dim // 2), torch.randn(2, 1, self.hidden // 2))
+        return (torch.randn(2, 1, self.hidden_dim // 2), torch.randn(2, 1, self.hidden_dim // 2))
 
 
-    def _forward_pass(self):
+    def _forward_pass(self, sentence):
+        """
+
+        :return:
+        """
+        init_val = torch.full((1, self.tag_size), -10000.)
+        init_val[0][self.tag_dict[START_TAG]] = 0.
+        forward_val = init_val
+
+        for char in sentence:
+            val_time = []
+            for next_tag in range(self.tag_size):
+                emission_score = char[next_tag].view(1, -1).expand(1, self.tag_size)
+                transition_score = self.transitions[next_tag].view(1, -1)
+                next_tag_val = forward_val + emission_score + transition_score
+                val_time.append(log_sum_exp(next_tag_val).view(1))
+            forward_val = torch.cat(val_time).view(1, -1)
+        end_val = forward_val + self.transitions[self.tag_dict[STOP_TAG]]
+        val = log_sum_exp(end_val)
+        return val
 
 
+    def _get_lstm_features(self, sentence):
+        self.hidden = self.init_hidden()
+        embeddings = self.word_embed(sentence).view(len(sentence), 1, -1)
+        lstm_out, self.hidden = self.lstm(embeddings, self.hidden)
+        lstm_out = lstm_out.view(len(sentence), self.hidden_dim)
+        lstm_features = self.hidden_to_tag(lstm_out)
+        return lstm_features
 
+    
