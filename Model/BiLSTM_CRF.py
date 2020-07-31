@@ -1,37 +1,35 @@
 #! usr/bin/env python3
 # -*- coding:utf-8 -*-
-import tensorflow as tf
-import tensorflow_addons as tf_ad
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.autograd as autograd
+
+torch.manual_seed(1)
+
+START_TAG = "<START>"
+STOP_TAG = "<STOP>"
+
+def argmax(vec):
+    """
+    This method finds the index of the largest value of an one-dimension vector.
+    :param vec:
+    :return:
+    """
+
+    _, index = torch.max(vec, 1)
+    return index.item()
 
 
-class BiLSTM_CRF(tf.keras.Model):
-    def __init__(self, vocab_size, label_size, hidden_dim, embedding_dim):
-        super(BiLSTM_CRF, self).__init__()
-        self.hidden_dim = hidden_dim
-        self.vocab_size = vocab_size
-        self.label_size = label_size
+def log_sum_exp(vec):
+    """
+    This methods calculates the vec's log(sum(exp(xi)))=a+log(sum(exp(xi-a)))
+    :param vec:
+    :return:
+    """
+    max_score = vec[0, argmax(vec)]
+    max_score_braodcast = max_score.view(1, -1).expand(1, vec.size()[1])
+    return max_score + torch.log(torch.sum(torch.exp(vec - max_score_braodcast)))
 
-        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
-        self.biLSTM = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(hidden_dim, return_sequences=True))
-        self.dense = tf.keras.layers.Dense(label_size)
 
-        self.transition_params = tf.Variable(tf.random.uniform(shape=(label_size, label_size)))
-        self.dropout = tf.keras.layers.Dropout(0.5)
-
-    # @tf.function
-    def call(self, text, labels=None, training=None):
-        text_lens = tf.math.reduce_sum(tf.cast(tf.math.not_equal(text, 0), dtype=tf.int32), axis=-1)
-        # -1 change 0
-        inputs = self.embedding(text)
-        inputs = self.dropout(inputs, training)
-        logits = self.dense(self.biLSTM(inputs))
-
-        if labels is not None:
-            label_sequences = tf.convert_to_tensor(labels, dtype=tf.int32)
-            log_likelihood, self.transition_params = tf_ad.text.crf_log_likelihood(logits,
-                                                                                   label_sequences,
-                                                                                   text_lens,
-                                                                                   transition_params=self.transition_params)
-            return logits, text_lens, log_likelihood
-        else:
-            return logits, text_lens
