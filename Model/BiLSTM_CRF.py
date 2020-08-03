@@ -1,90 +1,51 @@
 #! usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.autograd as autograd
+import tensorflow as tf
+import tensorflow_addons as tf_ad
 
-torch.manual_seed(1)
-
-START_TAG = "<START>"
-STOP_TAG = "<STOP>"
-
-def argmax(vec):
-    """
-    This method finds the index of the largest value of an one-dimension vector.
-    :param vec:
-    :return:
-    """
-
-    _, index = torch.max(vec, 1)
-    return index.item()
-
-
-def log_sum_exp(vec):
-    """
-    This methods calculates the vec's log(sum(exp(xi)))=a+log(sum(exp(xi-a)))
-    :param vec:
-    :return:
-    """
-    max_score = vec[0, argmax(vec)]
-    max_score_braodcast = max_score.view(1, -1).expand(1, vec.size()[1])
-    return max_score + torch.log(torch.sum(torch.exp(vec - max_score_braodcast)))
-
-
-class BiLSTM_CRF(nn.module):
-    def __init__(self, vocab_size, tag_dict, embed_dim, hidden_dim):
+class BiLSTM_CRF(tf.keras.Model):
+    def __init__(self, hidden_dim, vocab_size, tag_size, embed_dim):
         super(BiLSTM_CRF, self).__init__()
-        self.embed_dim = embed_dim
+        self.num_hidden = hidden_dim
         self.vocab_size = vocab_size
-        self.hidden_dim = hidden_dim
-        self.tag_dict = tag_dict
-        self.tag_size = len(tag_dict)
+        self.tag_size = tag_size
 
-        self.word_embed = nn.Embedding(vocab_size, embed_dim)
-        self.lstm = nn.LSTM(embed_dim, hidden_dim // 2, num_layers=1, bidirectional=True)
-        self.hidden_to_tag = nn.Linear(hidden_dim, self.tag_size)
+        self.embedding = tf.keras.layers.Embedding(vocab_size, embed_dim)
+        self.biLSTM = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(hidden_dim, return_sequences=True))
+        self.dense = tf.keras.layers.Dense(tag_size)
 
-        self.transitions = nn.Parameter(torch.randn(self.tag_size, self.tag_size))
-        self.transitions.data[tag_dict[STOP_TAG],:] = -10000
-        self.transitions.data[:, tag_dict[STOP_TAG]] = -10000
-
-        self.hidden = self.init_hidden()
+        self.transition_params = tf.Variable(tf.random.uniform(shape=(tag_size, tag_size)))
+        self.dropout = tf.keras.layers.Dropout(0.5)
 
 
-    def init_hidden(self):
-        return (torch.randn(2, 1, self.hidden_dim // 2), torch.randn(2, 1, self.hidden_dim // 2))
+    # @tf.function
+    def call(self, text,labels=None,training=None):
+        text_lens = tf.math.reduce_sum(tf.cast(tf.math.not_equal(text, 0), dtype=tf.int32), axis=-1)
+        # -1 change 0
+        inputs = self.embedding(text)
+        inputs = self.dropout(inputs, training)
+        logits = self.dense(self.biLSTM(inputs))
+
+        if labels is not None:
+            label_sequences = tf.convert_to_tensor(labels, dtype=tf.int32)
+            log_likelihood, self.transition_params = tf_ad.text.crf_log_likelihood(logits,
+                                                                                   label_sequences,
+                                                                                   text_lens,
+                                                                                   transition_params=self.transition_params)
+            return logits, text_lens, log_likelihood
+        else:
+            return logits, text_lens
 
 
-    def _forward_pass(self, sentence):
-        """
-
-        :return:
-        """
-        init_val = torch.full((1, self.tag_size), -10000.)
-        init_val[0][self.tag_dict[START_TAG]] = 0.
-        forward_val = init_val
-
-        for char in sentence:
-            val_time = []
-            for next_tag in range(self.tag_size):
-                emission_score = char[next_tag].view(1, -1).expand(1, self.tag_size)
-                transition_score = self.transitions[next_tag].view(1, -1)
-                next_tag_val = forward_val + emission_score + transition_score
-                val_time.append(log_sum_exp(next_tag_val).view(1))
-            forward_val = torch.cat(val_time).view(1, -1)
-        end_val = forward_val + self.transitions[self.tag_dict[STOP_TAG]]
-        val = log_sum_exp(end_val)
-        return val
+# @tf.function
+def train_one_step(model, data, label, opt):
+  with tf.GradientTape() as tape:
+      logits, text_lens, log_likelihood = model(data, label,training=True)
+      loss = - tf.reduce_mean(log_likelihood)
+  gradients = tape.gradient(loss, model.trainable_variables)
+  opt.apply_gradients(zip(gradients, model.trainable_variables))
+  return loss,logits, text_lens
 
 
-    def _get_lstm_features(self, sentence):
-        self.hidden = self.init_hidden()
-        embeddings = self.word_embed(sentence).view(len(sentence), 1, -1)
-        lstm_out, self.hidden = self.lstm(embeddings, self.hidden)
-        lstm_out = lstm_out.view(len(sentence), self.hidden_dim)
-        lstm_features = self.hidden_to_tag(lstm_out)
-        return lstm_features
 
-    
