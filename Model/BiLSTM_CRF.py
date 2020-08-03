@@ -40,12 +40,29 @@ class BiLSTM_CRF(tf.keras.Model):
 
 # @tf.function
 def train_one_step(model, data, label, opt):
-  with tf.GradientTape() as tape:
+    with tf.GradientTape() as tape:
       logits, text_lens, log_likelihood = model(data, label,training=True)
       loss = - tf.reduce_mean(log_likelihood)
-  gradients = tape.gradient(loss, model.trainable_variables)
-  opt.apply_gradients(zip(gradients, model.trainable_variables))
-  return loss,logits, text_lens
+    gradients = tape.gradient(loss, model.trainable_variables)
+    opt.apply_gradients(zip(gradients, model.trainable_variables))
+
+    return loss, logits, text_lens
+
+
+def get_acc_one_step(logits, text_lens, labels_batch, model):
+    paths = []
+    accuracy = 0
+    for logit, text_len, labels in zip(logits, text_lens, labels_batch):
+        viterbi_path, _ = tf_ad.text.viterbi_decode(logit[:text_len], model.transition_params)
+        paths.append(viterbi_path)
+        correct_prediction = tf.equal(
+            tf.convert_to_tensor(tf.keras.preprocessing.sequence.pad_sequences([viterbi_path], padding='post'), dtype=tf.int32),
+            tf.convert_to_tensor(tf.keras.preprocessing.sequence.pad_sequences([labels[:text_len]], padding='post'), dtype=tf.int32)
+        )
+        accuracy = accuracy + tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        # print(tf.reduce_mean(tf.cast(correct_prediction, tf.float32)))
+    accuracy = accuracy / len(paths)
+    return accuracy
 
 
 
