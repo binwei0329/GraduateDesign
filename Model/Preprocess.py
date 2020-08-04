@@ -42,6 +42,9 @@ def read_file(file):
         s = tag_list[i].rstrip("\n")
         tag_list[i] = s
     tag_dic = {n:m for m, n in enumerate(tag_list)}
+    # for n in tag_dic.keys():
+    #     m = tag_dic[n] + 1
+    #     tag_dic[n] = m
 
     word = []
     temp = ""
@@ -63,6 +66,9 @@ def read_file(file):
 
     return tag_dic, char_dic, word_dic, sentence_list, tags
 
+# tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/Weibo_NER_Corpus.train")
+# print(tag_dic)
+
 
 def load_char_embeddings(file):
     f = open(file,'r')
@@ -76,6 +82,8 @@ def load_char_embeddings(file):
 
 
 def convert_data(file):
+    name = str(file)[str(file).index("weibo"):]
+
     tag_dic, char_dic, word_dic, sentence_list, tags = read_file(file)
     data, label = [], []
     for s in range(len(sentence_list)):
@@ -93,8 +101,8 @@ def convert_data(file):
                 if t == k:
                     l.append(tag_dic[k])
         label.append(l)
-
-    with open("../Data/BiLSTM_CRF_data.pkl", "wb") as pkl:
+    file_name = "../Data/" + name + ".pkl"
+    with open(file_name, "wb") as pkl:
         pickle.dump(tag_dic, pkl)
         pickle.dump(char_dic, pkl)
         pickle.dump(word_dic, pkl)
@@ -111,7 +119,18 @@ def format_data(data, label):
     # avg_len = length // len(data)
     max_len = max(length)
     print(max_len)
-    data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=max_len, padding="post", value=-1)
-    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=max_len, padding="post", value=-1)
+    data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=max_len, padding="post", value=0)
+    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=max_len, padding="post", value=16)
 
     return data, label
+
+
+if __name__ == "__main__":
+    file = "../Data/weiboNER_Corpus.train"
+    convert_data(file)
+    fileA = "../Data/weiboNER_2nd_conll.train"
+    convert_data(fileA)
+    fileB = "../Data/weiboNER_2nd_conll.dev"
+    convert_data(fileB)
+    fileC = "../Data/weiboNER_2nd_conll.test"
+    convert_data(fileC)
