@@ -2,13 +2,13 @@ import pickle
 import numpy as np
 import tensorflow as tf
 from collections import Counter
-from Model.BiLSTM_CRF import BiLSTM_CRF, train_one_step, predict, calculate_metrics
+from Model.BiLSTM_CRF import BiLSTM_CRF, train_one_step, predict, calculate_metrics, extract_label
 from Model.Preprocess import convert_data, format_data, load_char_embeddings
 
 def traing_BiLSTM_CRF():
     EMBED_DIM = 50
     HIDDEN_DIM = 32
-    EPOCH = 10
+    EPOCH = 20
     LEARNING_RATE = 0.01
 
     char_embed_dict = load_char_embeddings("../Data/vec.txt")
@@ -54,52 +54,50 @@ def traing_BiLSTM_CRF():
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
 
-    # print(len(data_train))
-    tf.print(tf.shape(data_train))
-    tf.print(tf.shape(label_train))
-
     # print(3622 // 128) 28
     train_dataset = tf.data.Dataset.from_tensor_slices((data_train, label_train))
     train_dataset = train_dataset.shuffle(len(data_train)).batch(128, drop_remainder=True)
-    #
-    #
+
     model = BiLSTM_CRF(HIDDEN_DIM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
 
     pre, rec, f1score = 0, 0, 0
+    # text_lens = None
+    gold_labels = []
+    pred_labels = []
     for e in range(EPOCH):
-        for _, (data_batch, label_batch) in enumerate(train_dataset):
+        loss = None
+        for i, (data_batch, label_batch) in enumerate(train_dataset):
             # step += 1
             loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
-            # if step % 20 == 0:
-            #     accuracy = get_acc_one_step(logits, text_lens, label_batch, model)
-            #     if accuracy > best_acc:
-            #         best_acc = accuracy
-    # tf.print(best_acc)
-            labels = np.array(label_batch)
-            alt_labels = []
-            for label, text_len in zip(labels, text_lens):
-                alt_labels.append(label[:text_len])
-            alt_labels = np.array(alt_labels)
-            # print(alt_labels.shape)
-            # print("*" * 68)
-            predictions = predict(logits, text_lens, label_batch, model)
-            predictions = np.array(predictions)
-            # print(predictions.shape)
-            # print(predictions)
-            # print("*" * 100)
-            # print(alt_labels)
-            # print("-" * 100)
-            # precision, recall, f1 = calculate_metrics(predictions, alt_labels)
-            # pre += precision
-            # rec += recall
-            # f1score += f1
-            print(loss)
-    #
+            if e == 19:
+                real_labels = extract_label(text_lens, label_batch)
+                gold_labels.extend(real_labels)
+
+            if (i + 1) % 5 == 0:
+                print("Epoch:", e, " Loss:", loss.numpy())
+
+
+    for i, (data, label) in enumerate(train_dataset):
+        predictions = predict(model, label, data)
+        pred_labels.extend(predictions)
+
+    with open("labels.pkl", "wb") as file:
+        pickle.dump(pred_labels, file)
+        pickle.dump(gold_labels, file)
+    # pre, rec, f1 = calculate_metrics(pred_labels, gold_labels)
+    # print("Precision:", pre, " Recall:", rec, " f1score:", f1)
+        # for text_len, labell in zip(text_lens, label):
+        #     real_label = labell[:text_len]
+        #     real_label = np.array(real_label)
+
+        # s = np.array(label)
+        # print(s.shape)
+        # print(type(predictions))
     # pre /= EPOCH
     # rec /= EPOCH
     # f1score /= EPOCH
-    # print("Precision:", pre, " Recall:", rec, " f1score:", f1score)
+
     # with open ("../Data/weiboNER_2nd_conll.train.pkl", "rb") as file_test:
     #     tag_dic_t = pickle.load(file_test)
     #     char_dic_t = pickle.load(file_test)
@@ -171,34 +169,6 @@ def traing_BiLSTM_CRF():
 
 if __name__ == "__main__":
     traing_BiLSTM_CRF()
-    # with open ("../Data/weiboNER_2nd_conll.train.pkl", "rb") as file_test:
-    #     tag_dic_t = pickle.load(file_test)
-    #     char_dic_t = pickle.load(file_test)
-    #     word_dic_t = pickle.load(file_test)
-    #     sentence_list_t = pickle.load(file_test)
-    #     tags_t = pickle.load(file_test)
-    #     data_test_t = pickle.load(file_test)
-    #     label_test_t = pickle.load(file_test)
-    # dataset = np.array(data_test_t)
-    # labelset = np.array(label_test_t)
-    #
-    # with open ("../Data/weiboNER_2nd_conll.test.pkl", "rb") as file:
-    #     tag_dic = pickle.load(file)
-    #     char_dic = pickle.load(file)
-    #     word_dic = pickle.load(file)
-    #     sentence_list = pickle.load(file)
-    #     tags = pickle.load(file)
-    #     data = pickle.load(file)
-    #     label = pickle.load(file)
-    # data = np.array(data)
-    # label = np.array(label)
-    #
-    # print(data[0])
-    # print(label[0])
-    #
-    # print(dataset[0])
-    # print(labelset[0])
-    # print(tag_dic)
 
     # p = [[16, 16, 7, 15, 16, 16, 2, 8],
     #      [16, 16, 16, 5, 8, 16, 16, 16]]
