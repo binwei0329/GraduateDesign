@@ -62,25 +62,38 @@ def traing_BiLSTM_CRF():
 
     gold_labels = []
     pred_labels = []
-    for e in range(EPOCH):
-        for i, (data_batch, label_batch) in enumerate(train_dataset):
-            # step += 1
-            loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
-            if e == 19:
-                real_labels = extract_label(text_lens, label_batch)
-                gold_labels.extend(real_labels)
+    # for e in range(EPOCH):
+    #     for i, (data_batch, label_batch) in enumerate(train_dataset):
+    #         # step += 1
+    #         loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
+    #         # if e == 19:
+    #             # real_labels = extract_label(text_lens, label_batch)
+    #             # gold_labels.extend(real_labels)
+    #
+    #         if (i + 1) % 5 == 0:
+    #             print("Epoch:", e, " Loss:", loss.numpy())
 
-            if (i + 1) % 5 == 0:
-                print("Epoch:", e, " Loss:", loss.numpy())
-
-
+    gold_labels = []
     for i, (data, label) in enumerate(train_dataset):
+        # print(np.array(label).shape)
+        gold_labels.extend(np.array(label))
         predictions = predict(model, label, data)
+        # print(len(predictions))
         pred_labels.extend(predictions)
 
-    with open("labels.pkl", "wb") as file:
-        pickle.dump(pred_labels, file)
-        pickle.dump(gold_labels, file)
+
+    for s in range(len(pred_labels)):
+        pred_len = len(pred_labels[s])
+        gold_label = gold_labels[s]
+        effective_part = gold_label[:pred_len]
+        gold_labels[s] = effective_part
+
+    for i in range(len(pred_labels)):
+        print(i, "Pred len: ", len(pred_labels[i]), "Gold len: ", (len(gold_labels[i])))
+    # print(len(gold_labels))
+    # with open("labels.pkl", "wb") as file:
+    #     pickle.dump(pred_labels, file)
+    #     pickle.dump(gold_labels, file)
 
     # with open ("../Data/weiboNER_2nd_conll.train.pkl", "rb") as file_test:
     #     tag_dic_t = pickle.load(file_test)
