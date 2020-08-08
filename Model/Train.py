@@ -54,19 +54,15 @@ def traing_BiLSTM_CRF():
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
 
-    # print(3622 // 128) 28
     train_dataset = tf.data.Dataset.from_tensor_slices((data_train, label_train))
     train_dataset = train_dataset.shuffle(len(data_train)).batch(128, drop_remainder=True)
 
     model = BiLSTM_CRF(HIDDEN_DIM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
 
-    pre, rec, f1score = 0, 0, 0
-    # text_lens = None
     gold_labels = []
     pred_labels = []
     for e in range(EPOCH):
-        loss = None
         for i, (data_batch, label_batch) in enumerate(train_dataset):
             # step += 1
             loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
@@ -85,18 +81,6 @@ def traing_BiLSTM_CRF():
     with open("labels.pkl", "wb") as file:
         pickle.dump(pred_labels, file)
         pickle.dump(gold_labels, file)
-    # pre, rec, f1 = calculate_metrics(pred_labels, gold_labels)
-    # print("Precision:", pre, " Recall:", rec, " f1score:", f1)
-        # for text_len, labell in zip(text_lens, label):
-        #     real_label = labell[:text_len]
-        #     real_label = np.array(real_label)
-
-        # s = np.array(label)
-        # print(s.shape)
-        # print(type(predictions))
-    # pre /= EPOCH
-    # rec /= EPOCH
-    # f1score /= EPOCH
 
     # with open ("../Data/weiboNER_2nd_conll.train.pkl", "rb") as file_test:
     #     tag_dic_t = pickle.load(file_test)
@@ -109,29 +93,11 @@ def traing_BiLSTM_CRF():
     # data_test, label_test = format_data(data_test, label_test)
     # vocab_size_t = len(char_dic_t)
     # tag_size_t = len(tag_dic_t)
-    # tf.print(data_test.shape)
-    # tf.print(label_test.shape)
-    # # print(tag_dic)
-    # # print(char_dic)
+
     # test_dataset = tf.data.Dataset.from_tensor_slices((data_test, label_test))
     # test_dataset = test_dataset.shuffle(len(data_test)).batch(64, drop_remainder=True)
-    # #
     # # model = BiLSTM_CRF(HIDDEN_DIM, vocab_size_t, tag_size_t, EMBED_DIM)
     # # optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
-    # #
-    # best_acc_t, step_t = 0, 0
-    # for e in range(EPOCH):
-    #     for _, (data_batch, label_batch) in enumerate(test_dataset):
-    #         step_t += 1
-    #         loss_t, logits_t, text_lens_t = train_one_step(model, data_batch, label_batch, optimizer)
-    #         # tf.print(loss_t)
-    #         if step_t % 20 == 0:
-    #             accuracy_t = get_acc_one_step(logits_t, text_lens_t, label_batch, model)
-    #             # tf.print(accuracy_t)
-    #             if accuracy_t > best_acc_t:
-    #                 best_acc_t = accuracy_t
-    #
-    # tf.print(best_acc_t)
 
     # with open ("../Data/weiboNER_2nd_conll.test.pkl", "rb") as file_test:
     #     tag_dic_t = pickle.load(file_test)
@@ -144,27 +110,8 @@ def traing_BiLSTM_CRF():
     # data_test_t, label_test_t = format_data(data_test_t, label_test_t)
     # vocab_size_t = len(char_dic_t)
     # tag_size_t = len(tag_dic_t)
-    # tf.print(data_test_t.shape)
-    # tf.print(label_test_t.shape)
-    # # print(tag_dic)
-    # # print(char_dic)
     # test_dataset_t = tf.data.Dataset.from_tensor_slices((data_test_t, label_test_t))
     # test_dataset_t = test_dataset_t.shuffle(len(data_test_t)).batch(128, drop_remainder=True)
-    # #
-    # # model = BiLSTM_CRF(HIDDEN_DIM, vocab_size, tag_size, EMBED_DIM)
-    # # optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
-    # #
-    # best_acc_t, step_t = 0, 0
-    # for e in range(EPOCH):
-    #     for _, (data_batch, label_batch) in enumerate(test_dataset_t):
-    #         step_t += 1
-    #         loss_t, logits_t, text_lens_t = train_one_step(model, data_batch, label_batch, optimizer)
-    #         if step_t % 20 == 0:
-    #             accuracy_t = get_acc_one_step(logits_t, text_lens_t, label_batch, model)
-    #             # tf.print(accuracy_t)
-    #             if accuracy_t > best_acc_t:
-    #                 best_acc_t = accuracy_t
-    #
     # tf.print(best_acc_t)
 
 if __name__ == "__main__":
