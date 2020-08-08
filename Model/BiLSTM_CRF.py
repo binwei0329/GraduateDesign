@@ -22,7 +22,7 @@ class BiLSTM_CRF(tf.keras.Model):
 
 
     # @tf.function
-    def call(self, text,labels=None,training=None):
+    def call(self, text, labels=None, training=None):
         text_lens = tf.math.reduce_sum(tf.cast(tf.math.not_equal(text, 0), dtype=tf.int32), axis=-1)
         # -1 change 0
         inputs = self.embedding(text)
@@ -32,9 +32,7 @@ class BiLSTM_CRF(tf.keras.Model):
         if labels is not None:
             label_sequences = tf.convert_to_tensor(labels, dtype=tf.int32)
             log_likelihood, self.transition_params = tf_ad.text.crf_log_likelihood(logits,
-                                                                                   label_sequences,
-                                                                                   text_lens,
-                                                                                   transition_params=self.transition_params)
+                                                    label_sequences, text_lens, transition_params=self.transition_params)
             return logits, text_lens, log_likelihood
         else:
             return logits, text_lens
@@ -51,36 +49,26 @@ def train_one_step(model, data, label, opt):
     return loss, logits, text_lens
 
 
-def predict(logits, text_lens, labels_batch, model):
+def predict(model, labels, data):
     predictions = []
-    # accuracy = 0
-    for logit, text_len, labels in zip(logits, text_lens, labels_batch):
-        # tf.print(tf.shape(logit[:text_len]), "\t", text_len, "\t", labels)
+    logits, text_lens, log_likeliyhood = model(data, labels)
+    for logit, text_len, label in zip(logits, text_lens, labels):
         viterbi_path, _ = tf_ad.text.viterbi_decode(logit[:text_len], model.transition_params)
         viterbi_path = np.array(viterbi_path)
         predictions.append(viterbi_path)
 
-        # labels = np.array(labels)
-        # correct_prediction = tf.equal(
-        #     tf.convert_to_tensor(tf.keras.preprocessing.sequence.pad_sequences([viterbi_path], padding='post'), dtype=tf.int32),
-        #     tf.convert_to_tensor(tf.keras.preprocessing.sequence.pad_sequences([labels[:text_len]], padding='post'), dtype=tf.int32)
-        # )
-        # accuracy = accuracy + tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        # print(tf.reduce_mean(tf.cast(correct_prediction, tf.float32)))
-        # print(viterbi_path[:text_len])
-        # print(labels[:text_len])
-        # print("------------------------------------------------------")
-    # accuracy = accuracy / len(paths)
-    # return accuracy
-
     return predictions
 
 
-def calculate_metrics(predictions, labels):
-    # num_entities_pred = 0
-    # num_entities_label = 0
-    # num_entities = 0
+def extract_label(text_lens, labels):
+    real_labels = []
+    for (text_len, label) in zip(text_lens, labels):
+        real_label = np.array(label[:text_len])
+        real_labels.append(real_label)
+    return real_labels
 
+
+def calculate_metrics(predictions, labels):
     pred_list = []
     label_list = []
     entity_list = []
@@ -144,15 +132,5 @@ def calculate_metrics(predictions, labels):
     precision = len(entity_list) / len(pred_list)
     recall = len(entity_list) / len(label_list)
     f1 = 2 * precision * recall / (precision + recall)
-    # return pred_list, label_list, entity_list
-    return precision, recall, f1
 
-    # for i in range(len(label_list)):
-    #     if label_list[i] == pred_list[i]:
-    #         num_entities += 1
-    #
-    # num_entities_label = len(label_list)
-    # num_entities_pred = len(pred_list)
-    # for item in pred_list:
-    #     if item.index("16") >= 0:
-    #         num_entities_pred -= 1
+    return precision, recall, f1
