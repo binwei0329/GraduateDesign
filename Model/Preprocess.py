@@ -84,7 +84,6 @@ def load_char_embeddings(file):
 def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
     name = str(file)[str(file).index("weibo"):]
 
-    # tag_dic, char_dic, word_dic, sentence_list, tags = read_file(file)
     data, label = [], []
     for s in range(len(sentence_list)):
         d, l = [], []
@@ -138,15 +137,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # file = "../Data/weiboNER_Corpus.train"
-    # convert_data(file)
-    # fileA = "../Data/weiboNER_2nd_conll.train"
-    # convert_data(fileA)
-    # fileB = "../Data/weiboNER_2nd_conll.dev"
-    # convert_data(fileB)
-    # fileC = "../Data/weiboNER_2nd_conll.test"
-    # convert_data(fileC)
-    # main()
-
-    # print(load_char_embeddings("../Data/vec.txt"))
-    pass
+    main()
