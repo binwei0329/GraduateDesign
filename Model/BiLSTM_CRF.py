@@ -13,7 +13,6 @@ class BiLSTM_CRF(tf.keras.Model):
         self.tag_size = tag_size
 
         self.embedding = tf.keras.layers.Embedding(vocab_size, embed_dim)
-
         self.biLSTM = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(hidden_dim, return_sequences=True))
         self.dense = tf.keras.layers.Dense(tag_size)
 
