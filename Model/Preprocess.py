@@ -139,7 +139,6 @@ def format_data(data, label):
     for lb in label:
         length.append(len(lb))
     max_len = max(length)
-    print(max_len)
     data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=max_len, padding="post", value=0)
     label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=max_len, padding="post", value=16)
     return data, label
@@ -158,13 +157,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
-    with open("../Data/weiboNER_Corpus.train.pkl", "rb") as file:
-        a = pickle.load(file)
-        a1 = pickle.load(file)
-        a2 = pickle.load(file)
-        a3 = pickle.load(file)
-        a4 = pickle.load(file)
-        data = pickle.load(file)
-        label = pickle.load(file)
-        format_data(data, label)
+    main()
