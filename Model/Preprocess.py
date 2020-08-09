@@ -8,6 +8,11 @@ import tensorflow as tf
 
 
 def read_file(file):
+    """
+    This method reads a file and return all necessary dictionaries and data.
+    :param file: file to be read
+    :return: all necessary dictionaries and data
+    """
     tag_list = []
     word_list = []
     sentence_list = []
@@ -42,13 +47,11 @@ def read_file(file):
         s = tag_list[i].rstrip("\n")
         tag_list[i] = s
     tag_dic = {n:m for m, n in enumerate(tag_list)}
-    # for n in tag_dic.keys():
-    #     m = tag_dic[n] + 1
-    #     tag_dic[n] = m
 
     word = []
     temp = ""
     char = []
+
     for i in range(len(word_list)):
         char_ls = [char for char in word_list[i]]
         char.extend(char_ls)
@@ -63,14 +66,15 @@ def read_file(file):
     word_dic = {v:k for k, v in enumerate(word)}
     char = sorted(set(char))
     char_dic = {v:k for k, v in enumerate(char)}
-
     return tag_dic, char_dic, word_dic, sentence_list, tags
-
-# tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/Weibo_NER_Corpus.train")
-# print(tag_dic)
 
 
 def load_char_embeddings(file):
+    """
+    This method extracts the character embeddings from file.
+    :param file: the embedding file
+    :return: character embeddings
+    """
     f = open(file,'r')
     char_embed_dict = {}
     for line in f:
@@ -82,9 +86,21 @@ def load_char_embeddings(file):
 
 
 def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
+    """
+    This method writes all possibly relevant dictionaries and data into pickle files.
+    :param file: the file to be read
+    :param tag_dic: the tag dictionary used for converting data
+    :param char_dic: the character dictionary used for converting data
+    :param word_dic: the word dictionary used for converting data
+    :param sentence_list: all the sentences in a file
+    :param tags: all the tags corresponding to the sentences
+    :return: none
+    """
+    # Set up the name for the corresponding pickle file.
     name = str(file)[str(file).index("weibo"):]
-
+    
     data, label = [], []
+    # Use the character dictionary and tag dictionary to convert the data.
     for s in range(len(sentence_list)):
         d, l = [], []
         sentence = [char for char in sentence_list[s]]
@@ -101,6 +117,7 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
                     l.append(tag_dic[k])
         label.append(l)
     file_name = "../Data/" + name + ".pkl"
+
     with open(file_name, "wb") as pkl:
         pickle.dump(tag_dic, pkl)
         pickle.dump(char_dic, pkl)
@@ -112,15 +129,19 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
 
 
 def format_data(data, label):
+    """
+    This method finds the longest label and uses this to pad in both data and label.
+    :param data: data to be processed
+    :param label: label to be processed
+    :return: label and data with paddings
+    """
     length = []
-    for da in data:
-        length.append(len(da))
-    # avg_len = length // len(data)
-    max_len = 247
-    # print(max_len)
+    for lb in label:
+        length.append(len(lb))
+    max_len = max(length)
+    print(max_len)
     data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=max_len, padding="post", value=0)
     label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=max_len, padding="post", value=16)
-
     return data, label
 
 
@@ -137,4 +158,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    with open("../Data/weiboNER_Corpus.train.pkl", "rb") as file:
+        a = pickle.load(file)
+        a1 = pickle.load(file)
+        a2 = pickle.load(file)
+        a3 = pickle.load(file)
+        a4 = pickle.load(file)
+        data = pickle.load(file)
+        label = pickle.load(file)
+        format_data(data, label)
