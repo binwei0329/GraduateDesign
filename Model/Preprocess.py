@@ -6,7 +6,6 @@ import numpy as np
 import regex as re
 import tensorflow as tf
 
-
 def read_file(file):
     """
     This method reads a file and return all necessary dictionaries and data.
@@ -135,12 +134,8 @@ def format_data(data, label):
     :param label: label to be processed
     :return: label and data with paddings
     """
-    length = []
-    for lb in label:
-        length.append(len(lb))
-    max_len = max(length)
-    data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=max_len, padding="post", value=0)
-    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=max_len, padding="post", value=16)
+    data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="post", value=0)
+    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="post", value=16)
     return data, label
 
 
