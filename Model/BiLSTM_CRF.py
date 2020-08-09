@@ -59,14 +59,6 @@ def predict(model, labels, data):
     return predictions
 
 
-def extract_label(text_lens, labels):
-    real_labels = []
-    for (text_len, label) in zip(text_lens, labels):
-        real_label = np.array(label[:text_len])
-        real_labels.append(real_label)
-    return real_labels
-
-
 def calculate_metrics(predictions, labels):
     pred_list = []
     label_list = []
@@ -75,23 +67,17 @@ def calculate_metrics(predictions, labels):
         pred = predictions[i]
         label = labels[i]
 
-        # temp_pred, temp_label = "", ""
         temp_pred, temp_label = [], []
         for k in range(len(label)):
             if label[k] != 16:
                 temp_label.append(label[k])
                 if k == len(label) - 1:
                     label_list.append(temp_label)
-                # temp_label += str(label[k])
-                # temp_pred += str(pred[k])
             else:
-                # if len(temp_label) == len(temp_pred) == 0:
                 if len(temp_label) == 0:
                     continue
                 else:
-                    # pred_list.append(temp_pred)
                     label_list.append(temp_label)
-                    # temp_pred = temp_label = ""
                     temp_label = []
 
         for m in range(len(pred)):
@@ -99,19 +85,12 @@ def calculate_metrics(predictions, labels):
                 temp_pred.append(pred[m])
                 if m == len(pred) - 1:
                     pred_list.append(temp_pred)
-                # temp_label += str(label[k])
-                # temp_pred += str(pred[k])
             else:
-                # if len(temp_label) == len(temp_pred) == 0:
                 if len(temp_pred) == 0:
                     continue
                 else:
-                    # pred_list.append(temp_pred)
                     pred_list.append(temp_pred)
-                    # temp_pred = temp_label = ""
-
                     temp_pred = []
-
 
         temp_entity = []
         for s in range(len(label)):
