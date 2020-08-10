@@ -95,9 +95,6 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
     :param tags: all the tags corresponding to the sentences
     :return: none
     """
-    # Set up the name for the corresponding pickle file.
-    name = str(file)[str(file).index("weibo"):]
-    
     data, label = [], []
     # Use the character dictionary and tag dictionary to convert the data.
     for s in range(len(sentence_list)):
@@ -115,8 +112,10 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
                 if t == k:
                     l.append(tag_dic[k])
         label.append(l)
-    file_name = "../Data/" + name + ".pkl"
 
+    # Set up the name for the corresponding pickle file.
+    name = str(file)[str(file).index("weibo"):]
+    file_name = "../Data/" + name + ".pkl"
     with open(file_name, "wb") as pkl:
         pickle.dump(tag_dic, pkl)
         pickle.dump(char_dic, pkl)
@@ -140,6 +139,9 @@ def format_data(data, label):
 
 
 def main():
+    """
+    This method writes the converted data from different datasets into corresponding pickle files.
+    """
     tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/weiboNER_Corpus.train")
     _, _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train")
     _, _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev")
