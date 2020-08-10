@@ -135,7 +135,7 @@ def calculate_metrics(predictions, labels):
                     entity_list.append(temp_entity)
                     temp_entity = []
 
-    # Give the relevant metrics. 
+    # Give the relevant metrics.
     precision = len(entity_list) / len(pred_list)
     recall = len(entity_list) / len(label_list)
     f1 = 2 * precision * recall / (precision + recall)
