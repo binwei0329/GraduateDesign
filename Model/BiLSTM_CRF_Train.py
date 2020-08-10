@@ -10,6 +10,11 @@ from Model.Preprocess import format_data, load_char_embeddings
 from Model.BiLSTM_CRF import BiLSTM_CRF, train_one_step, predict, calculate_metrics
 
 def load_data(file):
+    """
+    This method reads the pickle files and format them.
+    :param file: file to be read
+    :return: the formatted dataset, tag size and vocab size
+    """
     with open(file, "rb") as f:
         tag_dic = pickle.load(f)
         char_dic = pickle.load(f)
@@ -29,6 +34,13 @@ def load_data(file):
 
 
 def load_data_helper(op):
+    """
+    This method returns the formatted dataset, vocab size and tag size of different files.
+    :param op: the options
+    :return: formatted dataset, vocab size and tag size
+    """
+    # If the option is "train", we apply undersampling and oversampling technique to get
+    # bigger datasets.
     if op == "train":
         with open("../Data/weiboNER_2nd_conll.train.pkl", "rb") as file:
             _ = pickle.load(file)
@@ -88,6 +100,13 @@ def load_data_helper(op):
 
 
 def store_labels(model, dataset, op):
+    """
+    The method uses the trained model to generate predicted labels and
+    writes both predicted labels and gold labels into corresponding pickle files.
+    :param model: trained model
+    :param dataset: dataset on which the model makes predictions
+    :param op: name to choose
+    """
     pred_labels = []
     gold_labels = []
     for i, (data, label) in enumerate(dataset):
@@ -109,6 +128,9 @@ def store_labels(model, dataset, op):
 
 
 def traing_BiLSTM_CRF():
+    """
+    This method trains the model and generates the predictions.
+    """
     EMBED_DIM = 50
     HIDDEN_DIM = 32
     EPOCH = 20
@@ -116,16 +138,17 @@ def traing_BiLSTM_CRF():
 
     char_embed_dict = load_char_embeddings("../Data/vec.txt")
 
+    # Use the augmented training set to train the model.
     train_dataset, vocab_size, tag_size = load_data_helper("train")
     model = BiLSTM_CRF(HIDDEN_DIM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
-
     for e in range(EPOCH):
         for i, (data_batch, label_batch) in enumerate(train_dataset):
             loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
             if (i + 1) % 10 == 0:
                 print("Epoch:", e + 1, " Loss:", loss.numpy())
 
+    # Generate the predictions on the following datasets and write them into corresponding pickle files.
     store_labels(model, train_dataset, "trainset")
 
     dev_dataset, _, _ = load_data_helper("dev")
@@ -138,6 +161,10 @@ def traing_BiLSTM_CRF():
     # store_labels(model, origin_train_dataset, t)
 
 def report_perfomence(arg):
+    """
+    This method gives relevant evaluations on the performance.
+    :param arg: dataset to choose
+    """
     filename = "../Data/labels_" + arg + ".pkl"
 
     with open(filename, "rb") as file:
