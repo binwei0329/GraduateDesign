@@ -27,7 +27,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="D:/Files/PythonCode/CWS-Hmm_BiLSTM-CRF-master" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -38,7 +38,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.CommitDialog" />
   </component>
-  <component name="RunManager" selected="Python.Train">
+  <component name="RunManager" selected="Python.BiLSTM_CRF_Train">
     <configuration name="BiLSTM_CRF" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="GraduateDesign" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -61,7 +61,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Models (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="BiLSTM_CRF_Train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="GraduateDesign" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -74,7 +74,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/Models.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/BiLSTM_CRF_Train.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -151,11 +151,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.BiLSTM_CRF_Train" />
         <item itemvalue="Python.Train" />
+        <item itemvalue="Python.Test" />
         <item itemvalue="Python.Preprocess" />
         <item itemvalue="Python.BiLSTM_CRF" />
-        <item itemvalue="Python.Test" />
-        <item itemvalue="Python.Models (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -200,6 +200,10 @@
       <workItem from="1596592925353" duration="10046000" />
       <workItem from="1596683709149" duration="9459000" />
       <workItem from="1596763873772" duration="23259000" />
+      <workItem from="1596806518540" duration="263000" />
+      <workItem from="1596855732366" duration="17150000" />
+      <workItem from="1596939555216" duration="21430000" />
+      <workItem from="1597022738900" duration="1214000" />
     </task>
     <servers />
   </component>
@@ -207,30 +211,34 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="1142" y="325" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596513088115">
+    <state x="1142" y="325" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596939667707">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="1142" y="325" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1596513088115" />
+    <state x="1142" y="325" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1596939667707" />
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1596877660001">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1596877660001" />
     <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1596420728667">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1596420728667" />
-    <state width="1877" height="236" key="GridCell.Tab.0.bottom" timestamp="1596801918136">
+    <state width="1877" height="229" key="GridCell.Tab.0.bottom" timestamp="1596989190135">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="236" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1596801918136" />
-    <state width="1877" height="236" key="GridCell.Tab.0.center" timestamp="1596801918136">
+    <state width="1877" height="229" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1596989190135" />
+    <state width="1877" height="229" key="GridCell.Tab.0.center" timestamp="1596989190135">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="236" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1596801918136" />
-    <state width="1877" height="236" key="GridCell.Tab.0.left" timestamp="1596801918136">
+    <state width="1877" height="229" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1596989190135" />
+    <state width="1877" height="229" key="GridCell.Tab.0.left" timestamp="1596989190135">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="236" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1596801918136" />
-    <state width="1877" height="236" key="GridCell.Tab.0.right" timestamp="1596801918136">
+    <state width="1877" height="229" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1596989190135" />
+    <state width="1877" height="229" key="GridCell.Tab.0.right" timestamp="1596989190135">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="236" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1596801918136" />
+    <state width="1877" height="229" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1596989190135" />
     <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1594978369379">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -261,10 +269,11 @@
     <state x="1103" y="230" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1596259417329" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/GraduateDesign$Test.coverage" NAME="Test Coverage Results" MODIFIED="1596424634174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
-    <SUITE FILE_PATH="coverage/GraduateDesign$Train.coverage" NAME="Train Coverage Results" MODIFIED="1596801918121" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
-    <SUITE FILE_PATH="coverage/GraduateDesign$Preprocess.coverage" NAME="Preprocess Coverage Results" MODIFIED="1596687417572" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$Test.coverage" NAME="Test Coverage Results" MODIFIED="1596965691261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$Train.coverage" NAME="Train Coverage Results" MODIFIED="1596968345937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$Preprocess.coverage" NAME="Preprocess Coverage Results" MODIFIED="1596945405552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Models__1_.coverage" NAME="Models (1) Coverage Results" MODIFIED="1595663437572" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_CRF_Train.coverage" NAME="BiLSTM_CRF_Train Coverage Results" MODIFIED="1597029027131" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_CRF.coverage" NAME="BiLSTM_CRF Coverage Results" MODIFIED="1596616849294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Models.coverage" NAME="Models Coverage Results" MODIFIED="1595584222636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
