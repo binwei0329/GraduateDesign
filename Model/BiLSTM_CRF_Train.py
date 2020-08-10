@@ -127,7 +127,7 @@ def store_labels(model, dataset, op):
             pickle.dump(gold_labels, file)
 
 
-def traing_BiLSTM_CRF():
+def train_BiLSTM_CRF():
     """
     This method trains the model and generates the predictions.
     """
@@ -184,4 +184,4 @@ if __name__ == "__main__":
         report_perfomence("testset")
 
     else:
-        traing_BiLSTM_CRF()
+        train_BiLSTM_CRF()
