@@ -23,7 +23,6 @@ class BiLSTM_CRF(tf.keras.Model):
     # @tf.function
     def call(self, text, labels=None, training=None):
         text_lens = tf.math.reduce_sum(tf.cast(tf.math.not_equal(text, 0), dtype=tf.int32), axis=-1)
-        # -1 change 0
         inputs = self.embedding(text)
         inputs = self.dropout(inputs, training)
         logits = self.dense(self.biLSTM(inputs))
@@ -49,6 +48,13 @@ def train_one_step(model, data, label, opt):
 
 
 def predict(model, labels, data):
+    """
+    This method uses the trained model to generate predictions.
+    :param model: trained model
+    :param labels: gold labels
+    :param data: data
+    :return: the predictions
+    """
     predictions = []
     logits, text_lens, log_likeliyhood = model(data, labels)
     for logit, text_len, label in zip(logits, text_lens, labels):
@@ -60,26 +66,46 @@ def predict(model, labels, data):
 
 
 def calculate_metrics(predictions, labels):
+    """
+    This method gives the relevant evaluations on the performance of the model.
+    :param predictions: predictions
+    :param labels: gold labels
+    :return: all the relevant performance evaluations
+    """
+    # Prepare three lists to store predicted labels, gold labels and correctly-predicted labels.
     pred_list = []
     label_list = []
     entity_list = []
+
     for i in range(len(predictions)):
         pred = predictions[i]
         label = labels[i]
 
         temp_pred, temp_label = [], []
+
+        # Find the all the gold labels.
         for k in range(len(label)):
+            # A label is not part of the named entity if it is 16.
             if label[k] != 16:
+                # Add such a label into temp list.
                 temp_label.append(label[k])
+                # If we reach the end of a sequence of labels, add the recognized item to
+                # the list.
                 if k == len(label) - 1:
                     label_list.append(temp_label)
+
+            # If a label is 16, we can try to add already recognized item into the gold label list.
             else:
+                # If the temp label has the length of 0, which means it has not recognized anything,
+                # we continue then.
                 if len(temp_label) == 0:
                     continue
                 else:
+                    # Add the recognized label into the gold label list and reset the temp label.
                     label_list.append(temp_label)
                     temp_label = []
 
+        # The way how we find the predicted labels is analogous to the previous one.
         for m in range(len(pred)):
             if pred[m] != 16:
                 temp_pred.append(pred[m])
@@ -92,6 +118,8 @@ def calculate_metrics(predictions, labels):
                     pred_list.append(temp_pred)
                     temp_pred = []
 
+        # We iterate both predicted labels and gold labels, and those same items we find in
+        # both lists at the same positions are the correctly predicted items.
         temp_entity = []
         for s in range(len(label)):
             if label[s] != 16 and pred[s] != 16:
@@ -107,6 +135,7 @@ def calculate_metrics(predictions, labels):
                     entity_list.append(temp_entity)
                     temp_entity = []
 
+    # Give the relevant metrics. 
     precision = len(entity_list) / len(pred_list)
     recall = len(entity_list) / len(label_list)
     f1 = 2 * precision * recall / (precision + recall)
