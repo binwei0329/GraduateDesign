@@ -9,10 +9,9 @@ Description: This is part of my graduate project, which tries to explore some
 
 import numpy as np
 import tensorflow as tf
-from nltk import edit_distance
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Layer, Dense, LSTM, Concatenate, Reshape, Embedding, Input
+from tensorflow.keras.layers import Layer, Dense, LSTM, Concatenate, Reshape, Embedding, Input, Bidirectional
 
 
 class BahdanauAttention(Layer):
@@ -51,37 +50,82 @@ class BahdanauAttention(Layer):
         return context_vector, attention_weights
 
 
-def encoder_model(encoder_input, vocab_size, embedding_dim, units):
-    # shape: (batch_size, inputs.shape[1], embedding_dim)
-    encoder_embed = Embedding(vocab_size, embedding_dim)(encoder_input)
-    # shape: (batch_size, inputs.shape[1], encoder_units), (batch_size, encoder_units)
-    output, encoder_hid, encoder_cell = LSTM(units, return_sequences=True, return_state=True, dropout=0.2,
-                                             recurrent_initializer='glorot_uniform')(encoder_embed)
-    model = Model(encoder_input, [output, encoder_hid])
+class Encoder(Model):
+    def __init__(self, vocab_size, embed_dim, unit_num):
+        super(Encoder, self).__init__()
+        self.vocab_size = vocab_size
+        self.unit_num = unit_num
+        self.embedding = Embedding(vocab_size, embed_dim, embeddings_initializer="uniform", name="encoder_embed")
+        forward_lstm = LSTM(self.unit_num, return_sequences=True, go_backwards=False, dropout=0.4,
+                                            recurrent_initializer="glorot_uniform", name="forward_lstm")
+        backward_lstm = LSTM(self.unit_num, return_sequences=True, go_backwards=True, dropout=0.4,
+                                             return_state=True, name="backward_lstm")
+        self.bilstm = Bidirectional(merge_mode="concat", layer=forward_lstm, backward_layer=backward_lstm,
+                                    name="ecnoder_bilstm")
 
-    return model
+
+    def call(self, enc_input, training):
+        enc_embed = self.embedding(enc_input)
+        enc_output, enc_hid = self.bilstm(enc_embed)
+        return enc_output, enc_hid
+
+# def build_encoder(encoder_input, vocab_size, embedding_dim, units):
+#     # shape: (batch_size, inputs.shape[1], embedding_dim)
+#     encoder_embed = Embedding(vocab_size, embedding_dim)(encoder_input)
+#     # shape: (batch_size, inputs.shape[1], encoder_units), (batch_size, encoder_units)
+#     # output, encoder_hid, encoder_cell = LSTM(units, return_sequences=True, return_state=True, dropout=0.4,
+#     #                                          recurrent_initializer='glorot_uniform')(encoder_embed)
+#
+#     forward_lstm = LSTM(units, return_sequences=True, go_backwards=False, dropout=0.4,
+#                         recurrent_initializer="glorot_uniform", name="forward_lstm")
+#     backward_lstm = LSTM(units, return_sequences=True, go_backwards=True, dropout=0.4,
+#                          recurrent_initializer="glorot_uniform", return_state=True, name="backward_lstm")
+#
+#     bilstm = Bidirectional(merge_mode="concat", layer=forward_lstm, backward_layer=backward_lstm, name="bilstm")
+#     model = Model(encoder_input, [output, encoder_hid])
+#
+#     return model
 
 
-def decoder_model(decoder_input, hidden, encoder_outputs, vocab_size, embedding_dim, units):
-    # shape (batch_size, 1, embedding_dim) decoder
-    decoder_embed = Embedding(vocab_size, embedding_dim)(decoder_input)
+# def decoder_model(decoder_input, hidden, encoder_outputs, vocab_size, embedding_dim, units):
+#     # shape (batch_size, 1, embedding_dim) decoder
+#     decoder_embed = Embedding(vocab_size, embedding_dim)(decoder_input)
+#
+#     # shape (batch_size, encoder_units), (batch_size, encoder_seq_len, 1)
+#     context_vector, attention_weights = BahdanauAttention(units, trainable=True)([hidden, encoder_outputs])
+#
+#     # shape (batch_size, 1, embedding_dim + encoder_units)
+#     output = Concatenate(axis=-1)([tf.expand_dims(context_vector, 1), decoder_embed])
+#
+#     # shape (batch_size, 1, decoder_units), (batch_size, decoder_units)
+#     output, decoder_hid, decoder_cell = LSTM(units, return_sequences=True, return_state=True, dropout=0.2,
+#                          recurrent_initializer='glorot_uniform')(output)
+#     # (batch_size * 1, decoder_units)
+#     output = Reshape(target_shape=(-1, units))(output)
+#     # shape (batch_size, vocab_size)
+#     output = Dense(vocab_size)(output)
+#     model = Model(inputs=[decoder_input, hidden, encoder_outputs], outputs=[output, decoder_hid])
+#
+#     return model
 
-    # shape (batch_size, encoder_units), (batch_size, encoder_seq_len, 1)
-    context_vector, attention_weights = BahdanauAttention(units, trainable=True)([hidden, encoder_outputs])
+class Decoder(Model):
+    def __init__(self, vocab_size, embed_dim, unit_num):
+        super(Decoder, self).__init__()
+        self.vocab_size = vocab_size
+        self.unit_num = unit_num
+        self.embed = Embedding(vocab_size, embed_dim, embeddings_initializer="uniform", name="decoder_embed")
+        self.lstm = LSTM(self.unit_num, return_sequences=True, return_state=True, dropout=0.4,
+                         recurrent_initializer="glorot_uniform", name="decoder_lstm")
+        self.attention = BahdanauAttention(self.unit_num)
 
-    # shape (batch_size, 1, embedding_dim + encoder_units)
-    output = Concatenate(axis=-1)([tf.expand_dims(context_vector, 1), decoder_embed])
-
-    # shape (batch_size, 1, decoder_units), (batch_size, decoder_units)
-    output, decoder_hid, decoder_cell = LSTM(units, return_sequences=True, return_state=True, dropout=0.2,
-                         recurrent_initializer='glorot_uniform')(output)
-    # (batch_size * 1, decoder_units)
-    output = Reshape(target_shape=(-1, units))(output)
-    # shape (batch_size, vocab_size)
-    output = Dense(vocab_size)(output)
-    model = Model(inputs=[decoder_input, hidden, encoder_outputs], outputs=[output, decoder_hid])
-
-    return model
+    def call(self, dec_input, enc_hid, enc_output):
+        context_vector, attention_weight = self.attention(enc_hid, enc_output)
+        dec_embed = self.embed(dec_input)
+        dec_output = Concatenate(axis=-1)([tf.expand_dims(context_vector, 1), dec_embed])
+        dec_output, dec_state = self.lstm(dec_output)
+        dec_output = Reshape(target_shape=(-1, self.unit_num))
+        dec_output = Dense(self.vocab_size)
+        return dec_output, dec_state, attention_weight
 
 
 def loss_function(targets, preds, padding_value):
