@@ -30,7 +30,7 @@ def load_data(file):
         data = pickle.load(f)
         label = pickle.load(f)
 
-    data, label = format_data(data, label)
+    data, label = format_data(data, label, "bilstm_crf")
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
 
@@ -83,7 +83,7 @@ def load_data_helper(op):
                 del label_train[i]
                 del data_train[i]
 
-        data_train, label_train = format_data(data_train, label_train)
+        data_train, label_train = format_data(data_train, label_train, "bilstm_crf")
         vocab_size = len(char_dic)
         tag_size = len(tag_dic)
 

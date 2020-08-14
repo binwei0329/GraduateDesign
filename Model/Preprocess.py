@@ -132,15 +132,21 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
         pickle.dump(label, pkl)
 
 
-def format_data(data, label):
+def format_data(data, label, op):
     """
     This method finds the longest label and uses this to pad in both data and label.
     :param data: data to be processed
     :param label: label to be processed
     :return: label and data with paddings
     """
-    data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="post", value=0)
-    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="post", value=16)
+    if op == "seq2seq":
+        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="pre", value=0)
+        label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="pre", value=16)
+
+    else:
+        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="post", value=0)
+        label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="post", value=16)
+
     return data, label
 
 

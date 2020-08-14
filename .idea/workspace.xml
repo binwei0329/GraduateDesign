@@ -39,28 +39,6 @@
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.CommitDialog" />
   </component>
   <component name="RunManager" selected="Python.BiLSTM_CRF_Train">
-    <configuration name="BiLSTM_CRF" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="GraduateDesign" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Model" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/BiLSTM_CRF.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="BiLSTM_CRF_Train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="GraduateDesign" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -97,6 +75,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/Preprocess.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Seq2Seq" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GraduateDesign" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Model" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/Seq2Seq.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -152,10 +152,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.BiLSTM_CRF_Train" />
+        <item itemvalue="Python.Seq2Seq" />
         <item itemvalue="Python.Train" />
         <item itemvalue="Python.Test" />
         <item itemvalue="Python.Preprocess" />
-        <item itemvalue="Python.BiLSTM_CRF" />
       </list>
     </recent_temporary>
   </component>
@@ -206,7 +206,11 @@
       <workItem from="1597022738900" duration="4267000" />
       <workItem from="1597056379157" duration="824000" />
       <workItem from="1597058029309" duration="1318000" />
-      <workItem from="1597126671223" duration="312000" />
+      <workItem from="1597126671223" duration="2533000" />
+      <workItem from="1597199273635" duration="1782000" />
+      <workItem from="1597288080197" duration="4538000" />
+      <workItem from="1597368767040" duration="8756000" />
+      <workItem from="1597387443370" duration="1581000" />
     </task>
     <servers />
   </component>
@@ -226,22 +230,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1596420728667" />
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1597074832487">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1597411707014">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1597074832487" />
-    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1597074832487">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1597411707014" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1597411707014">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1597074832487" />
-    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1597074832487">
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1597411707014" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1597411707013">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1597074832487" />
-    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1597074832487">
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1597411707013" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1597411707014">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1597074832487" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1597411707014" />
     <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1594978369379">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -276,8 +280,9 @@
     <SUITE FILE_PATH="coverage/GraduateDesign$Train.coverage" NAME="Train Coverage Results" MODIFIED="1596968345937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Preprocess.coverage" NAME="Preprocess Coverage Results" MODIFIED="1596945405552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Models__1_.coverage" NAME="Models (1) Coverage Results" MODIFIED="1595663437572" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
-    <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_CRF_Train.coverage" NAME="BiLSTM_CRF_Train Coverage Results" MODIFIED="1597059006871" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_CRF_Train.coverage" NAME="BiLSTM_CRF_Train Coverage Results" MODIFIED="1597411581097" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_CRF.coverage" NAME="BiLSTM_CRF Coverage Results" MODIFIED="1596616849294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$Seq2Seq.coverage" NAME="Seq2Seq Coverage Results" MODIFIED="1597128579513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Models.coverage" NAME="Models Coverage Results" MODIFIED="1595584222636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
