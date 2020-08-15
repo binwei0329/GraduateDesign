@@ -90,34 +90,50 @@ class Decoder(Model):
         return dec_output, dec_state, attention_weight
 
 
-def loss_function(targets, preds, padding_value):
+# def loss(labels, logits):
+#   return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+#
+# example_batch_loss  = loss(target_example_batch, example_batch_predictions)
+# print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)")
+# print("scalar_loss:      ", example_batch_loss.numpy().mean())
+
+
+def loss_function(gold_seq, pred_seq):
+# def loss_function(targets, preds, padding_value):
     cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(
         from_logits=True
     )
     # Ignore the padding value.
-    mask = tf.math.logical_not(tf.math.equal(targets, padding_value))
-    mask = tf.cast(mask, dtype=tf.int64)
-    loss = cross_entropy(targets, preds, sample_weight=mask)
+    # mask = tf.math.logical_not(tf.math.equal(targets, padding_value))
+    # mask = tf.cast(mask, dtype=tf.int64)
+    loss = cross_entropy(gold_seq, pred_seq)
 
     return loss
 
 
 # 一个比较好的解决方法就是将“O”，也就是Padding前置，即16
 @tf.function
-def train_step(input, target, optimizer, encoder, decoder, padding_value, target_dic):
+def train_step(input_seq, target_seq, optimizer, encoder, decoder):
+# def train_step(input_seq, output_seq, optimizer, encoder, decoder, padding_value, target_dic, batch_size):
     loss = 0
+    batch_size = int(target_seq[0])
     with tf.GradientTape() as tape:
-        encoder_out, encoder_hid = encoder(input)
-        decoder_hid = encoder_hid
-        decoder_in = tf.expand_dims([16] * BATCH_SIZE, 1)
-        # feeding the target as the next input
-        for t in range(1, target.shape[1]):
-            # passing encoder_output to the decoder
-            predictions, decoding_hidden = decoder([decoder_in, decoder_hid, encoder_out])
-            loss += loss_function(target[:, t], predictions, padding_value)
-            decoder_in = tf.expand_dims(target[:, t], 1)
+        enc_out, enc_hid = encoder(input_seq)
+        dec_hid = enc_hid
+        dec_in = tf.expand_dims([16] * batch_size, 1)
 
-    batch_loss = (loss / int(target.shape[0]))
+        # feeding the target as the next input
+        for t in range(1, target_seq.shape[1]):
+            # passing encoder_output to the decoder
+            pred_seq, dec_hid = decoder([dec_in, dec_hid, enc_out])
+
+            # loss += loss_function(target[:, t], predictions, padding_value)
+            loss += loss_function(target_seq[:, t], pred_seq)
+
+            dec_in = tf.expand_dims(target_seq[:, t], 1)
+
+    # batch_loss = (loss / int(target_seq.shape[0]))
+    batch_loss = (loss / batch_size)
     variables = encoder.trainable_variables + decoder.trainable_variables
     gradients = tape.gradient(loss, variables)
     optimizer.apply_gradients(zip(gradients, variables))
@@ -125,10 +141,12 @@ def train_step(input, target, optimizer, encoder, decoder, padding_value, target
 
 
 def infer(base_vec, encoder, decoder):
-    pred_array = []
+    pred_sequence = []
     for k in range(len(base_vec)):
         word = np.array(base_vec[k])
         word = np.reshape(word, (1, 16))
+        # word = np.reshape(word, (1, 16))
+
         word = tf.convert_to_tensor(word)
         hidden = tf.zeros((1,))
         encoder_out, encoder_hid = encoder(word, hidden)
