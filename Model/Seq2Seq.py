@@ -140,33 +140,33 @@ def train_step(input_seq, target_seq, optimizer, encoder, decoder):
     return batch_loss
 
 
-def infer(base_vec, encoder, decoder):
+def predict(input_seq, encoder, decoder):
     pred_sequence = []
-    for k in range(len(base_vec)):
-        word = np.array(base_vec[k])
-        word = np.reshape(word, (1, 16))
+    for k in range(len(input_seq)):
+        sentence = np.array(input_seq[k])
+        sentence = np.reshape(sentence, (1, 256))
         # word = np.reshape(word, (1, 16))
 
-        word = tf.convert_to_tensor(word)
+        sentence = tf.convert_to_tensor(sentence)
         hidden = tf.zeros((1,))
-        encoder_out, encoder_hid = encoder(word, hidden)
-        decoder_hid = encoder_hid
+        enc_out, enc_hid = encoder(sentence, hidden)
+        dec_hid = enc_hid
         # decoder_input = tf.expand_dims([0], 0)
-        decoder_input = tf.expand_dims([16], 0) # 因为padding是O，前置的padding，所以是16
+        dec_in = tf.expand_dims([16], 0) # 因为padding是O，前置的padding，所以是16
 
         result = []
         for i in range(10):
-            pred, decoder_hid = decoder([decoder_input, decoder_hid, encoder_out])
-            pred = tf.squeeze(pred)
-            pred_id = tf.argmax(pred).numpy()
+            pred_seq, dec_hid = decoder([dec_in, dec_hid, enc_out])
+            pred_seq = tf.squeeze(pred_seq)
+            pred_id = tf.argmax(pred_seq).numpy()
             if pred_id == 1:
                 break
             result.append(pred_id)
-            decoder_input = tf.expand_dims([pred_id], 0)
+            dec_in = tf.expand_dims([pred_id], 0)
         result = np.array(result)
-        pred_array.append(result)
+        pred_sequence.append(result)
 
-    return pred_array
+    return pred_sequence
 
 
 if __name__ == "__main__":
