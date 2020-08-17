@@ -57,14 +57,14 @@ class Encoder(Model):
         self.unit_num = unit_num
         self.embedding = Embedding(vocab_size, embed_dim, embeddings_initializer="uniform", name="encoder_embed")
         forward_lstm = LSTM(self.unit_num, return_sequences=True, go_backwards=False, dropout=0.4,
-                                            recurrent_initializer="glorot_uniform", name="forward_lstm")
+                            return_state=True, recurrent_initializer="glorot_uniform", name="forward_lstm")
         backward_lstm = LSTM(self.unit_num, return_sequences=True, go_backwards=True, dropout=0.4,
-                                             return_state=True, name="backward_lstm")
+                            return_state=True, name="backward_lstm")
         self.bilstm = Bidirectional(merge_mode="concat", layer=forward_lstm, backward_layer=backward_lstm,
                                     name="ecnoder_bilstm")
 
-
-    def call(self, enc_input, training):
+    def call(self, enc_input):
+    # def call(self, enc_input, training):
         enc_embed = self.embedding(enc_input)
         enc_output, enc_hid = self.bilstm(enc_embed)
         return enc_output, enc_hid
