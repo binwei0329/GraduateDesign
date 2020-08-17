@@ -15,7 +15,7 @@ from collections import Counter
 from Model.Preprocess import format_data, load_char_embeddings
 from Model.BiLSTM_CRF import BiLSTM_CRF, train_step, predict, calculate_metrics
 
-def load_data(file):
+def load_data(file, format_op):
     """
     This method reads the pickle files and format them.
     :param file: file to be read
@@ -30,7 +30,7 @@ def load_data(file):
         data = pickle.load(f)
         label = pickle.load(f)
 
-    data, label = format_data(data, label, "bilstm_crf")
+    data, label = format_data(data, label, format_op)
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
 
@@ -39,7 +39,7 @@ def load_data(file):
     return dataset, vocab_size, tag_size
 
 
-def load_data_helper(op):
+def load_data_helper(op, format_op):
     """
     This method returns the formatted dataset, vocab size and tag size of different files.
     :param op: the options
@@ -83,7 +83,7 @@ def load_data_helper(op):
                 del label_train[i]
                 del data_train[i]
 
-        data_train, label_train = format_data(data_train, label_train, "bilstm_crf")
+        data_train, label_train = format_data(data_train, label_train, format_op)
         vocab_size = len(char_dic)
         tag_size = len(tag_dic)
 
@@ -92,11 +92,11 @@ def load_data_helper(op):
 
     elif op == "dev":
         file = "../Data/weiboNER_2nd_conll.dev.pkl"
-        dataset, vocab_size, tag_size = load_data(file)
+        dataset, vocab_size, tag_size = load_data(file, format_op)
 
     else:
         file = "../Data/weiboNER_2nd_conll.test.pkl"
-        dataset, vocab_size, tag_size = load_data(file)
+        dataset, vocab_size, tag_size = load_data(file, format_op)
 
     # else:
     #     file = "../Data/weiboNER_2nd_conll.train.pkl"
@@ -145,7 +145,7 @@ def train_BiLSTM_CRF():
     char_embed_dict = load_char_embeddings("../Data/vec.txt")
 
     # Use the augmented training set to train the model.
-    train_dataset, vocab_size, tag_size = load_data_helper("train")
+    train_dataset, vocab_size, tag_size = load_data_helper("train", "bilstm_crf")
     model = BiLSTM_CRF(HIDDEN_DIM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
     for e in range(EPOCH):
@@ -157,10 +157,10 @@ def train_BiLSTM_CRF():
     # Generate the predictions on the following datasets and write them into corresponding pickle files.
     store_labels(model, train_dataset, "trainset")
 
-    dev_dataset, _, _ = load_data_helper("dev")
+    dev_dataset, _, _ = load_data_helper("dev", "bilstm_crf")
     store_labels(model, dev_dataset, "devset")
 
-    test_dataset, _, _ = load_data_helper("test")
+    test_dataset, _, _ = load_data_helper("test", "bilstm_crf")
     store_labels(model, test_dataset, "testset")
 
     # origin_train_dataset = load_data_helper("origin_train")
