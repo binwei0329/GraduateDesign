@@ -43,7 +43,7 @@ class BiLSTM_CRF(tf.keras.Model):
 
 
 # @tf.function
-def train_one_step(model, data, label, opt):
+def train_step(model, data, label, opt):
     with tf.GradientTape() as tape:
       logits, text_lens, log_likelihood = model(data, label,training=True)
       loss = - tf.reduce_mean(log_likelihood)
@@ -62,7 +62,7 @@ def predict(model, labels, data):
     :return: the predictions
     """
     predictions = []
-    logits, text_lens, log_likeliyhood = model(data, labels)
+    logits, text_lens, log_likelihood = model(data, labels)
     for logit, text_len, label in zip(logits, text_lens, labels):
         viterbi_path, _ = tf_ad.text.viterbi_decode(logit[:text_len], model.transition_params)
         viterbi_path = np.array(viterbi_path)

@@ -12,8 +12,10 @@ import pickle
 import numpy as np
 import tensorflow as tf
 from collections import Counter
+from Model.BiLSTM_CRF import calculate_metrics
 from Model.Preprocess import format_data, load_char_embeddings
-from Model.BiLSTM_CRF import BiLSTM_CRF, train_step, predict, calculate_metrics
+from Model.Seq2Seq import Encoder, Decoder, train_step, predict
+
 
 def load_data(file):
     """
@@ -150,7 +152,7 @@ def train_BiLSTM_CRF():
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
     for e in range(EPOCH):
         for i, (data_batch, label_batch) in enumerate(train_dataset):
-            loss, logits, text_lens = train_step(model, data_batch, label_batch, optimizer)
+            loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
             if (i + 1) % 10 == 0:
                 print("Epoch:", e + 1, " Loss:", loss.numpy())
 

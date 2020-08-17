@@ -167,7 +167,3 @@ def predict(input_seq, encoder, decoder):
         pred_sequence.append(result)
 
     return pred_sequence
-
-
-if __name__ == "__main__":
-    pass
