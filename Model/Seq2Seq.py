@@ -50,52 +50,37 @@ class BahdanauAttention(Layer):
         return context_vector, attention_weights
 
 
-class Encoder(Model):
-    def __init__(self, vocab_size, embed_dim, unit_num):
-        super(Encoder, self).__init__()
-        self.vocab_size = vocab_size
-        self.unit_num = unit_num
-        self.embedding = Embedding(vocab_size, embed_dim, embeddings_initializer="uniform", name="encoder_embed")
-        forward_lstm = LSTM(self.unit_num, return_sequences=True, go_backwards=False, dropout=0.4,
-                            return_state=True, recurrent_initializer="glorot_uniform", name="forward_lstm")
-        backward_lstm = LSTM(self.unit_num, return_sequences=True, go_backwards=True, dropout=0.4,
-                            return_state=True, name="backward_lstm")
-        self.bilstm = Bidirectional(merge_mode="concat", layer=forward_lstm, backward_layer=backward_lstm,
-                                    name="ecnoder_bilstm")
+def build_encoder(encoder_input, vocab_size, embed_dim, unit_size):
+    # shape: (batch_size, inputs.shape[1], embed_dim)
+    encoder_embed = Embedding(vocab_size, embed_dim)(encoder_input)
+    # shape: (batch_size, inputs.shape[1], encoder_units), (batch_size, encoder_units)
+    encoder_output, encoder_hid, encoder_cell = LSTM(unit_size, return_sequences=True, return_state=True, dropout=0.2,
+                                             recurrent_initializer='glorot_uniform')(encoder_embed)
+    model = Model(encoder_input, [encoder_output, encoder_hid])
 
-    def call(self, enc_input):
-    # def call(self, enc_input, training):
-        enc_embed = self.embedding(enc_input)
-        enc_output, enc_hid = self.bilstm(enc_embed)
-        return enc_output, enc_hid
+    return model
 
 
-class Decoder(Model):
-    def __init__(self, vocab_size, embed_dim, unit_num):
-        super(Decoder, self).__init__()
-        self.vocab_size = vocab_size
-        self.unit_num = unit_num
-        self.embed = Embedding(vocab_size, embed_dim, embeddings_initializer="uniform", name="decoder_embed")
-        self.lstm = LSTM(self.unit_num, return_sequences=True, return_state=True, dropout=0.4,
-                         recurrent_initializer="glorot_uniform", name="decoder_lstm")
-        self.attention = BahdanauAttention(self.unit_num)
+def build_decoder(decoder_input, hidden, encoder_output, vocab_size, embed_dim, unit_size):
+    # shape (batch_size, 1, embed_dim) decoder
+    decoder_embed = Embedding(vocab_size, embed_dim)(decoder_input)
 
-    def call(self, dec_input, enc_hid, enc_output):
-        context_vector, attention_weight = self.attention(enc_hid, enc_output)
-        dec_embed = self.embed(dec_input)
-        dec_output = Concatenate(axis=-1)([tf.expand_dims(context_vector, 1), dec_embed])
-        dec_output, dec_state = self.lstm(dec_output)
-        dec_output = Reshape(target_shape=(-1, self.unit_num))
-        dec_output = Dense(self.vocab_size)
-        return dec_output, dec_state, attention_weight
+    # shape (batch_size, encoder_units), (batch_size, encoder_seq_len, 1)
+    context_vector, attention_weights = BahdanauAttention(unit_size, trainable=True)([hidden, encoder_output])
 
+    # shape (batch_size, 1, embedding_dim + encoder_units)
+    output = Concatenate(axis=-1)([tf.expand_dims(context_vector, 1), decoder_embed])
 
-# def loss(labels, logits):
-#   return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
-#
-# example_batch_loss  = loss(target_example_batch, example_batch_predictions)
-# print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)")
-# print("scalar_loss:      ", example_batch_loss.numpy().mean())
+    # shape (batch_size, 1, decoder_units), (batch_size, decoder_units)
+    output, decoder_hid, decoder_cell = LSTM(unit_size, return_sequences=True, return_state=True, dropout=0.2,
+                         recurrent_initializer='glorot_uniform')(output)
+    # (batch_size * 1, decoder_units)
+    output = Reshape(target_shape=(-1, unit_size))(output)
+    # shape (batch_size, vocab_size)
+    output = Dense(vocab_size)(output)
+    model = Model(inputs=[decoder_input, hidden, encoder_output], outputs=[output, decoder_hid])
+
+    return model
 
 
 def loss_function(gold_seq, pred_seq):
