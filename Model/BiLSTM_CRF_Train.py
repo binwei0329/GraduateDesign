@@ -22,6 +22,7 @@ def load_data(file, format_op):
     :return: the formatted dataset, tag size and vocab size
     """
     with open(file, "rb") as f:
+        length = pickle.load(f)
         tag_dic = pickle.load(f)
         char_dic = pickle.load(f)
         word_dic = pickle.load(f)
@@ -30,7 +31,7 @@ def load_data(file, format_op):
         data = pickle.load(f)
         label = pickle.load(f)
 
-    data, label = format_data(data, label, format_op)
+    data, label = format_data(data, label, format_op, length)
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
 
@@ -54,11 +55,13 @@ def load_data_helper(op, format_op):
             _ = pickle.load(file)
             _ = pickle.load(file)
             _ = pickle.load(file)
+            _ = pickle.load(file)
             data = pickle.load(file)
             label = pickle.load(file)
-        length = len(data)
+        size = len(data)
 
         with open("../Data/weiboNER_Corpus.train.pkl", "rb") as file_train:
+            length = pickle.load(file_train)
             tag_dic = pickle.load(file_train)
             char_dic = pickle.load(file_train)
             word_dic = pickle.load(file_train)
@@ -67,8 +70,8 @@ def load_data_helper(op, format_op):
             data_train = pickle.load(file_train)
             label_train = pickle.load(file_train)
 
-        data_duplicate = data_train[length:]
-        label_duplicate = label_train[length:]
+        data_duplicate = data_train[size:]
+        label_duplicate = label_train[size:]
 
         # Oversampling the named entities.
         for i in range(3):
@@ -76,19 +79,25 @@ def load_data_helper(op, format_op):
             label_train.extend(label_duplicate)
 
         # Undersampling the data without named entities.
-        for i in range(length):
+        for i in range(size):
             label = label_train[i]
             dic = Counter(label)
             if dic[16] == len(label):
                 del label_train[i]
                 del data_train[i]
 
-        data_train, label_train = format_data(data_train, label_train, format_op)
+        data_train, label_train = format_data(data_train, label_train, format_op, length)
         vocab_size = len(char_dic)
         tag_size = len(tag_dic)
 
         dataset = tf.data.Dataset.from_tensor_slices((data_train, label_train))
         dataset = dataset.shuffle(len(data_train)).batch(64, drop_remainder=True)
+        # for i , (data_batch, label_batch) in enumerate(dataset):
+        #     data_batch = np.array(data_batch).reshape(64, 256)
+        #     label_batch = np.array(label_batch).reshape(64, 256)
+        #     print(data_batch[0])
+        #     print(label_batch[0])
+        #     break
 
     elif op == "dev":
         file = "../Data/weiboNER_2nd_conll.dev.pkl"
@@ -191,3 +200,5 @@ if __name__ == "__main__":
 
     else:
         train_BiLSTM_CRF()
+    # train_BiLSTM_CRF()
+
