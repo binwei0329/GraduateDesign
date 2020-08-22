@@ -71,7 +71,14 @@ def read_file(file):
     word_dic = {v:k for k, v in enumerate(word)}
     char = sorted(set(char))
     char_dic = {v:k for k, v in enumerate(char)}
-    return tag_dic, char_dic, word_dic, sentence_list, tags
+    len_list = []
+
+    # Get the longest length of the sentence in train file for padding later.
+    for sentence in sentence_list:
+        len_list.append(len(sentence))
+    length = max(len_list)
+
+    return length, tag_dic, char_dic, word_dic, sentence_list, tags
 
 
 def load_char_embeddings(file):
@@ -90,7 +97,7 @@ def load_char_embeddings(file):
     return char_embed_dict
 
 
-def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
+def convert_data(file, length, tag_dic, char_dic, word_dic, sentence_list, tags):
     """
     This method writes all possibly relevant dictionaries and data into pickle files.
     :param file: the file to be read
@@ -123,6 +130,7 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
     name = str(file)[str(file).index("weibo"):]
     file_name = "../Data/" + name + ".pkl"
     with open(file_name, "wb") as pkl:
+        pickle.dump(length, pkl)
         pickle.dump(tag_dic, pkl)
         pickle.dump(char_dic, pkl)
         pickle.dump(word_dic, pkl)
@@ -132,20 +140,20 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
         pickle.dump(label, pkl)
 
 
-def format_data(data, label, format_op):
+def format_data(data, label, format_op, length):
     """
     This method finds the longest label and uses this to pad in both data and label.
     :param data: data to be processed
     :param label: label to be processed
     :return: label and data with paddings
     """
-    if format_op == "seq2seq":
-        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="pre", value=0)
-        label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="pre", value=16)
+    if format_op == "bilstm_crf":
+        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=length, padding="post", value=0)
+        label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=length, padding="post", value=16)
 
     else:
-        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="post", value=0)
-        label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="post", value=16)
+        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=length, padding="pre", value=0)
+        label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=length, padding="pre", value=16)
 
     return data, label
 
@@ -154,15 +162,15 @@ def main():
     """
     This method writes the converted data from different datasets into corresponding pickle files.
     """
-    tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/weiboNER_Corpus.train")
-    _, _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train")
-    _, _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev")
-    _, _, _, sentence_list_c, tags_c = read_file("../Data/weiboNER_2nd_conll.test")
+    length, tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/weibo_NER_Corpus.train")
+    _, _, _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train")
+    _, _, _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev")
+    _, _, _, _, sentence_list_c, tags_c = read_file("../Data/weiboNER_2nd_conll.test")
 
-    convert_data("../Data/weiboNER_Corpus.train", tag_dic, char_dic, word_dic, sentence_list, tags)
-    convert_data("../Data/weiboNER_2nd_conll.train", tag_dic, char_dic, word_dic, sentence_list_a, tags_a)
-    convert_data("../Data/weiboNER_2nd_conll.dev", tag_dic, char_dic, word_dic, sentence_list_b, tags_b)
-    convert_data("../Data/weiboNER_2nd_conll.test", tag_dic, char_dic, word_dic, sentence_list_c, tags_c)
+    convert_data("../Data/weiboNER_Corpus.train", length, tag_dic, char_dic, word_dic, sentence_list, tags)
+    convert_data("../Data/weiboNER_2nd_conll.train", length, tag_dic, char_dic, word_dic, sentence_list_a, tags_a)
+    convert_data("../Data/weiboNER_2nd_conll.dev", length, tag_dic, char_dic, word_dic, sentence_list_b, tags_b)
+    convert_data("../Data/weiboNER_2nd_conll.test", length, tag_dic, char_dic, word_dic, sentence_list_c, tags_c)
 
 
 if __name__ == "__main__":
