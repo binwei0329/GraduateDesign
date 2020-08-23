@@ -1,12 +1,5 @@
 #! usr/bin/env python3
 # -*- coding:utf-8 -*-
-"""
-Graduate Project: Named Entity Recognition Task in Chinese Media
-Author: Bin Wei
-Description: This is part of my graduate project, which tries to explore some
-            models targeting NER tasks in Chinese social media.
-https://github.com/saiwaiyanyu/bi-lstm-crf-ner-tf2.0
-"""
 
 import numpy as np
 import tensorflow as tf
@@ -44,7 +37,7 @@ class BiLSTM_CRF(tf.keras.Model):
 
 
 # @tf.function
-def train_step(model, data, label, opt):
+def train_one_step(model, data, label, opt):
     with tf.GradientTape() as tape:
       logits, text_lens, log_likelihood = model(data, label,training=True)
       loss = - tf.reduce_mean(log_likelihood)
