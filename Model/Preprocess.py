@@ -19,7 +19,6 @@ def read_file(file, data):
     :return: all necessary dictionaries and data
     """
     tag_list = []
-    # word_list = []
     char_list = []
     sentence_list = []
     sentence = []
@@ -38,15 +37,9 @@ def read_file(file, data):
                     if "\u200b" in line:
                         line = re.sub("\u200b", "X", line)
                     ls = line.split("\t")
-                    # print(ls)
-
-                    # print(ls[-1].rstrip())
-                    # char = [char for char in ls[0]][0]
                     char = ls[0]
                     sentence.append(char)
                     char_list.append(char)
-                    # word_list.append(ls[0])
-                    # print(ls[-1].rstrip())
                     tag_list.append(ls[-1].rstrip())
                     tag += ls[-1]
 
@@ -64,45 +57,11 @@ def read_file(file, data):
                     if "\u200b" in line:
                         line = re.sub("\u200b", "X", line)
                     ls = line.split("\t")
-                    # print(ls[-1].rstrip())
                     char = [char for char in ls[0]][0]
                     sentence.append(char)
                     char_list.append(char)
-                    # word_list.append(ls[0])
-                    # print(ls[-1].rstrip())
                     tag_list.append(ls[-1].rstrip())
                     tag += ls[-1]
-    # if data == "twitter":
-    #     with open(file) as f:
-    #         for line in f:
-    #             if line == "\n":
-    #                 sentence_list.append(sentence)
-    #                 tags.append(tag.split())
-    #                 sentence = []
-    #                 tag = ""
-    #                 continue
-    #             else:
-    #                 # Resolve the encoding problem.
-    #                 if "\u200b" in line:
-    #                     line = re.sub("\u200b", "X", line)
-    #                 ls = line.split("\t")
-    #                 print(ls)
-    #                 # print(ls[-1].rstrip())
-    #                 # char = [char for char in ls[0]][0]
-    #                 # sentence.append(char)
-    #                 # char_list.append(char)
-    #                 # word_list.append(ls[0])
-    #                 # print(ls[-1].rstrip())
-    #                 tag_list.append(ls[-1].rstrip())
-    #                 tag += ls[-1]
-
-
-    # if data == "weibo":
-    #     # Exclude the last tag symbol, "X".
-    #     tag_list = tag_list[:-1]
-    # # elif data == "msra":
-    # elif data == "msra" or "twitter":
-    #     tag_list = tag_list[1:]
 
 
     tag_list = sorted(set(tag_list))
@@ -110,10 +69,9 @@ def read_file(file, data):
     if data == "weibo":
         # Exclude the last tag symbol, "X".
         tag_list = tag_list[:-1]
-    # elif data == "msra":
 
-    # elif data == "msra" or "twitter":
     else:
+        # Exclude the empty symbol.
         tag_list = tag_list[1:]
 
     # Clean the items in the tag_list and construct a dictionary out of the list.
@@ -122,25 +80,9 @@ def read_file(file, data):
         tag_list[i] = s
     tag_dic = {n:m for m, n in enumerate(tag_list)}
 
-    word = []
-    temp = ""
-    char = []
 
-    # for i in range(len(word_list)):
-    #     char_ls = [char for char in word_list[i]]
-    #     char.extend(char_ls)
-    #     temp += char_ls[0]
-    #
-    #     # Get the segmented words.
-    #     if word_list[i].endswith("0") and i > 0:
-    #         word.append(temp[:-1])
-    #         temp = temp[-1] + ""
-
-    # word = sorted(set(word))
-    # word_dic = {v:k for k, v in enumerate(word)}
     char_list = sorted(set(char_list))
     char_dic = {v:k for k, v in enumerate(char_list)}
-    # return tag_dic, char_dic, word_dic, sentence_list, tags
     return tag_dic, char_dic, sentence_list, tags
 
 
@@ -202,7 +144,7 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
         pickle.dump(label, pkl)
 
 
-def format_data(data, label):
+def format_data(data, label, tag_dic):
     """
     This method finds the longest label and uses this to pad in both data and label.
     :param data: data to be processed
@@ -210,7 +152,7 @@ def format_data(data, label):
     :return: label and data with paddings
     """
     data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=256, padding="post", value=0)
-    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="post", value=16)
+    label = tf.keras.preprocessing.sequence.pad_sequences(label, maxlen=256, padding="post", value=tag_dic["O"])
     return data, label
 
 
