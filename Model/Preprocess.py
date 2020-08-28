@@ -12,40 +12,109 @@ import numpy as np
 import regex as re
 import tensorflow as tf
 
-def read_file(file):
+def read_file(file, data):
     """
     This method reads a file and return all necessary dictionaries and data.
     :param file: file to be read
     :return: all necessary dictionaries and data
     """
     tag_list = []
-    word_list = []
+    # word_list = []
+    char_list = []
     sentence_list = []
     sentence = []
     tags, tag = [], ""
+    if data == "twitter":
+        with open(file) as f:
+            for line in f:
+                if line == "\n":
+                    sentence_list.append(sentence)
+                    tags.append(tag.split())
+                    sentence = []
+                    tag = ""
+                    continue
+                else:
+                    # Resolve the encoding problem.
+                    if "\u200b" in line:
+                        line = re.sub("\u200b", "X", line)
+                    ls = line.split("\t")
+                    # print(ls)
 
-    with open(file) as f:
-        for line in f:
-            if line == "\n":
-                sentence_list.append(sentence)
-                tags.append(tag.split())
-                sentence = []
-                tag = ""
-                continue
-            else:
-                # Resolve the encoding problem.
-                if "\u200b" in line:
-                    line = re.sub("\u200b", "X", line)
-                ls = line.split("\t")
-                sentence.append([char for char in ls[0]][0])
-                word_list.append(ls[0])
-                tag_list.append(ls[-1])
-                tag += ls[-1]
+                    # print(ls[-1].rstrip())
+                    # char = [char for char in ls[0]][0]
+                    char = ls[0]
+                    sentence.append(char)
+                    char_list.append(char)
+                    # word_list.append(ls[0])
+                    # print(ls[-1].rstrip())
+                    tag_list.append(ls[-1].rstrip())
+                    tag += ls[-1]
+
+    elif data == "msra" or "weibo":
+        with open(file) as f:
+            for line in f:
+                if line == "\n":
+                    sentence_list.append(sentence)
+                    tags.append(tag.split())
+                    sentence = []
+                    tag = ""
+                    continue
+                else:
+                    # Resolve the encoding problem.
+                    if "\u200b" in line:
+                        line = re.sub("\u200b", "X", line)
+                    ls = line.split("\t")
+                    # print(ls[-1].rstrip())
+                    char = [char for char in ls[0]][0]
+                    sentence.append(char)
+                    char_list.append(char)
+                    # word_list.append(ls[0])
+                    # print(ls[-1].rstrip())
+                    tag_list.append(ls[-1].rstrip())
+                    tag += ls[-1]
+    # if data == "twitter":
+    #     with open(file) as f:
+    #         for line in f:
+    #             if line == "\n":
+    #                 sentence_list.append(sentence)
+    #                 tags.append(tag.split())
+    #                 sentence = []
+    #                 tag = ""
+    #                 continue
+    #             else:
+    #                 # Resolve the encoding problem.
+    #                 if "\u200b" in line:
+    #                     line = re.sub("\u200b", "X", line)
+    #                 ls = line.split("\t")
+    #                 print(ls)
+    #                 # print(ls[-1].rstrip())
+    #                 # char = [char for char in ls[0]][0]
+    #                 # sentence.append(char)
+    #                 # char_list.append(char)
+    #                 # word_list.append(ls[0])
+    #                 # print(ls[-1].rstrip())
+    #                 tag_list.append(ls[-1].rstrip())
+    #                 tag += ls[-1]
+
+
+    # if data == "weibo":
+    #     # Exclude the last tag symbol, "X".
+    #     tag_list = tag_list[:-1]
+    # # elif data == "msra":
+    # elif data == "msra" or "twitter":
+    #     tag_list = tag_list[1:]
+
 
     tag_list = sorted(set(tag_list))
 
-    # Exclude the last tag symbol, "X".
-    tag_list = tag_list[:-1]
+    if data == "weibo":
+        # Exclude the last tag symbol, "X".
+        tag_list = tag_list[:-1]
+    # elif data == "msra":
+
+    # elif data == "msra" or "twitter":
+    else:
+        tag_list = tag_list[1:]
 
     # Clean the items in the tag_list and construct a dictionary out of the list.
     for i in range(len(tag_list)):
@@ -57,21 +126,22 @@ def read_file(file):
     temp = ""
     char = []
 
-    for i in range(len(word_list)):
-        char_ls = [char for char in word_list[i]]
-        char.extend(char_ls)
-        temp += char_ls[0]
+    # for i in range(len(word_list)):
+    #     char_ls = [char for char in word_list[i]]
+    #     char.extend(char_ls)
+    #     temp += char_ls[0]
+    #
+    #     # Get the segmented words.
+    #     if word_list[i].endswith("0") and i > 0:
+    #         word.append(temp[:-1])
+    #         temp = temp[-1] + ""
 
-        # Get the segmented words.
-        if word_list[i].endswith("0") and i > 0:
-            word.append(temp[:-1])
-            temp = temp[-1] + ""
-
-    word = sorted(set(word))
-    word_dic = {v:k for k, v in enumerate(word)}
-    char = sorted(set(char))
-    char_dic = {v:k for k, v in enumerate(char)}
-    return tag_dic, char_dic, word_dic, sentence_list, tags
+    # word = sorted(set(word))
+    # word_dic = {v:k for k, v in enumerate(word)}
+    char_list = sorted(set(char_list))
+    char_dic = {v:k for k, v in enumerate(char_list)}
+    # return tag_dic, char_dic, word_dic, sentence_list, tags
+    return tag_dic, char_dic, sentence_list, tags
 
 
 def load_char_embeddings(file):
@@ -121,7 +191,7 @@ def convert_data(file, tag_dic, char_dic, word_dic, sentence_list, tags):
 
     # Set up the name for the corresponding pickle file.
     name = str(file)[str(file).index("weibo"):]
-    file_name = "../Data/" + name + ".pkl"
+    file_name = "../Data/" + name + "2.pkl"
     with open(file_name, "wb") as pkl:
         pickle.dump(tag_dic, pkl)
         pickle.dump(char_dic, pkl)
@@ -148,16 +218,23 @@ def main():
     """
     This method writes the converted data from different datasets into corresponding pickle files.
     """
-    tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/weiboNER_Corpus.train")
-    _, _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train")
-    _, _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev")
-    _, _, _, sentence_list_c, tags_c = read_file("../Data/weiboNER_2nd_conll.test")
+    # tag_dic, char_dic, word_dic, sentence_list, tags = read_file("../Data/weiboNER_Corpus.train")
+    # _, _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train")
+    # _, _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev")
+    # _, _, _, sentence_list_c, tags_c = read_file("../Data/weiboNER_2nd_conll.test")
 
-    convert_data("../Data/weiboNER_Corpus.train", tag_dic, char_dic, word_dic, sentence_list, tags)
-    convert_data("../Data/weiboNER_2nd_conll.train", tag_dic, char_dic, word_dic, sentence_list_a, tags_a)
-    convert_data("../Data/weiboNER_2nd_conll.dev", tag_dic, char_dic, word_dic, sentence_list_b, tags_b)
-    convert_data("../Data/weiboNER_2nd_conll.test", tag_dic, char_dic, word_dic, sentence_list_c, tags_c)
+    # convert_data("../Data/weiboNER_Corpus.train", tag_dic, char_dic, word_dic, sentence_list, tags)
+    # convert_data("../Data/weiboNER_2nd_conll.train", tag_dic, char_dic, word_dic, sentence_list_a, tags_a)
+    # convert_data("../Data/weiboNER_2nd_conll.dev", tag_dic, char_dic, word_dic, sentence_list_b, tags_b)
+    # convert_data("../Data/weiboNER_2nd_conll.test", tag_dic, char_dic, word_dic, sentence_list_c, tags_c)
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
+    # tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
+    #
+    # tag_dic, char_dic, sentence_list, tags = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
+
+    print(tag_dic, "\n", sentence_list[0], "\n",tags[0])
+    print(char_dic)
