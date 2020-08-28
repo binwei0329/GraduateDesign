@@ -19,7 +19,8 @@ class BiLSTM_CRF(tf.keras.Model):
         self.tag_size = tag_size
 
         self.embedding = tf.keras.layers.Embedding(vocab_size, embed_dim)
-        self.biLSTM = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(hidden_dim, return_sequences=True))
+        self.biLSTM = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(hidden_dim, return_sequences=True,
+                                                                         recurrent_regularizer='l2', kernel_regularizer="l2"))
         self.dense = tf.keras.layers.Dense(tag_size)
 
         self.transition_params = tf.Variable(tf.random.uniform(shape=(tag_size, tag_size)))

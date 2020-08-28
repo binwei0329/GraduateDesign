@@ -43,6 +43,7 @@ def read_file(file, data):
                     tag_list.append(ls[-1].rstrip())
                     tag += ls[-1]
 
+
     elif data == "msra" or "weibo":
         with open(file) as f:
             for line in f:
@@ -118,8 +119,22 @@ def convert_data(file, tag_dic, char_dic, sentence_list, tags):
         sentence = [char for char in sentence_list[s]]
         tag = [t for t in tags[s]]
 
-        data.append([char_dic[char] for char in sentence])
-        label.append([tag_dic[t] for t in tag])
+        d = []
+        for char in sentence:
+            for k in char_dic.keys():
+                if char == k:
+                    d.append(char_dic[k])
+        data.append(d)
+
+        l = []
+        for t in tag:
+            for k in tag_dic.keys():
+                if t == k:
+                    l.append(tag_dic[k])
+        label.append(l)
+
+        # data.append([char_dic[char] for char in sentence])
+        # label.append([tag_dic[t] for t in tag])
         # print("ok")
         # if s == 2022:
         #     print(tag)
@@ -153,6 +168,7 @@ def write_files(keyword):
     """
     if keyword == "weibo":
         tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_Weibo_NER_Corpus.train", keyword)
+        # print(char_dic)
         # print(tag_dic)
         _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train", keyword)
         _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev", keyword)
@@ -174,11 +190,12 @@ def write_files(keyword):
         convert_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", tag_dic, char_dic, sentence_list, tags)
         convert_data("../PickleFiles/English_Twitter_NER_Corpus_test.pkl", tag_dic, char_dic, sentence_list_a, tags_a)
 
+    print("Writing pickle files done.")
 
 if __name__ == "__main__":
     write_files("weibo")
-    # write_files("msra")
-    # write_files("twitter")
+    write_files("msra")
+    write_files("twitter")
     # tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
     # tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
     # #

@@ -138,7 +138,7 @@ def train_BiLSTM_CRF():
     This method trains the model and generates the predictions.
     """
     EMBED_DIM = 64
-    HIDDEN_DIM = 64
+    UNIT_NUM = 64
     EPOCH = 20
     LEARNING_RATE = 0.005
 
@@ -146,11 +146,13 @@ def train_BiLSTM_CRF():
 
     # Use the augmented training set to train the model.
     train_dataset, vocab_size, tag_size = load_data_helper("train")
-    model = BiLSTM_CRF(HIDDEN_DIM, vocab_size, tag_size, EMBED_DIM)
+    model = BiLSTM_CRF(UNIT_NUM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
     for e in range(EPOCH):
         for i, (data_batch, label_batch) in enumerate(train_dataset):
+            print(label_batch)
             loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
+            print(logits)
             if (i + 1) % 10 == 0:
                 print("Epoch:", e + 1, "Batch:", i + 1, "Loss:", loss.numpy())
 
@@ -182,13 +184,13 @@ def report_perfomence(arg):
 
 
 if __name__ == "__main__":
-    cond1 = os.path.exists("../Data/bilstm_crf_labels_testset.pkl")
-    cond2 = os.path.exists("../Data/bilstm_crf_labels_trainset.pkl")
-    cond3 = os.path.exists("../Data/bilstm_crf_labels_devset.pkl")
-    if cond1 == cond2 == cond3 == True:
-        report_perfomence("trainset")
-        report_perfomence("devset")
-        report_perfomence("testset")
-
-    else:
+    # cond1 = os.path.exists("../Data/bilstm_crf_labels_testset.pkl")
+    # cond2 = os.path.exists("../Data/bilstm_crf_labels_trainset.pkl")
+    # cond3 = os.path.exists("../Data/bilstm_crf_labels_devset.pkl")
+    # if cond1 == cond2 == cond3 == True:
+    #     report_perfomence("trainset")
+    #     report_perfomence("devset")
+    #     report_perfomence("testset")
+    #
+    # else:
         train_BiLSTM_CRF()
