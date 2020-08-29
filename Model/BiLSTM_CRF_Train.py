@@ -15,7 +15,7 @@ from collections import Counter
 from Model.Preprocess import format_data, load_char_embeddings
 from Model.BiLSTM_CRF import BiLSTM_CRF, train_one_step, predict, calculate_metrics
 
-def load_data(file):
+def load_data(file, batch_size):
     """
     This method reads the pickle files and format them.
     :param file: file to be read
@@ -24,22 +24,21 @@ def load_data(file):
     with open(file, "rb") as f:
         tag_dic = pickle.load(f)
         char_dic = pickle.load(f)
-        word_dic = pickle.load(f)
         sentence_list = pickle.load(f)
         tags = pickle.load(f)
         data = pickle.load(f)
         label = pickle.load(f)
 
-    data, label = format_data(data, label)
+    data, label = format_data(data, label, tag_dic)
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
 
     dataset = tf.data.Dataset.from_tensor_slices((data, label))
-    dataset = dataset.shuffle(len(data)).batch(64, drop_remainder=True)
+    dataset = dataset.shuffle(len(data)).batch(batch_size, drop_remainder=True)
     return dataset, vocab_size, tag_size
 
 
-def load_data_helper(op):
+def load_data_helper(op, batch_size):
     """
     This method returns the formatted dataset, vocab size and tag size of different files.
     :param op: the options
@@ -48,20 +47,19 @@ def load_data_helper(op):
     # If the option is "train", we apply undersampling and oversampling technique to get
     # bigger datasets.
     if op == "train":
-        with open("../Data/weiboNER_2nd_conll.train.pkl", "rb") as file:
-            _ = pickle.load(file)
+        with open("../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl", "rb") as file:
             _ = pickle.load(file)
             _ = pickle.load(file)
             _ = pickle.load(file)
             _ = pickle.load(file)
             data = pickle.load(file)
             label = pickle.load(file)
+
         length = len(data)
 
-        with open("../Data/weiboNER_Corpus.train.pkl", "rb") as file_train:
+        with open("../PickleFiles/Chinese_Weibo_NER_Corpus_train.pkl", "rb") as file_train:
             tag_dic = pickle.load(file_train)
             char_dic = pickle.load(file_train)
-            word_dic = pickle.load(file_train)
             sentence_list = pickle.load(file_train)
             tags = pickle.load(file_train)
             data_train = pickle.load(file_train)
@@ -83,22 +81,21 @@ def load_data_helper(op):
                 del label_train[i]
                 del data_train[i]
 
-        data_train, label_train = format_data(data_train, label_train)
+        data_train, label_train = format_data(data_train, label_train, tag_dic)
         vocab_size = len(char_dic)
         tag_size = len(tag_dic)
 
         dataset = tf.data.Dataset.from_tensor_slices((data_train, label_train))
-        dataset = dataset.shuffle(len(data_train)).batch(64, drop_remainder=True)
+        dataset = dataset.shuffle(len(data_train)).batch(batch_size, drop_remainder=True)
 
     elif op == "dev":
-        file = "../Data/weiboNER_2nd_conll.dev.pkl"
-        dataset, vocab_size, tag_size = load_data(file)
+        file = "../PickleFiles/Chinese_Weibo_NER_Corpus_dev.pkl"
+        dataset, vocab_size, tag_size = load_data(file, batch_size)
 
     else:
-        file = "../Data/weiboNER_2nd_conll.test.pkl"
-        dataset, vocab_size, tag_size = load_data(file)
+        file = "../PickleFiles/Chinese_MSRA_NER_Corpus_test.pkl"
+        dataset, vocab_size, tag_size = load_data(file, batch_size)
 
-    # else:
     #     file = "../Data/weiboNER_2nd_conll.train.pkl"
     #     dataset, vocab_size, tag_size = load_data(file)
 
