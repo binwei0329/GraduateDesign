@@ -38,7 +38,7 @@ def load_data(file, batch_size):
     return dataset, vocab_size, tag_size
 
 
-def load_data_helper(op, batch_size):
+def load_data_helper(data_op, batch_size):
     """
     This method returns the formatted dataset, vocab size and tag size of different files.
     :param op: the options
@@ -46,7 +46,7 @@ def load_data_helper(op, batch_size):
     """
     # If the option is "train", we apply undersampling and oversampling technique to get
     # bigger datasets.
-    if op == "train":
+    if data_op == "train":
         with open("../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl", "rb") as file:
             _ = pickle.load(file)
             _ = pickle.load(file)
@@ -88,21 +88,22 @@ def load_data_helper(op, batch_size):
         dataset = tf.data.Dataset.from_tensor_slices((data_train, label_train))
         dataset = dataset.shuffle(len(data_train)).batch(batch_size, drop_remainder=True)
 
-    elif op == "dev":
+    elif data_op == "dev":
         file = "../PickleFiles/Chinese_Weibo_NER_Corpus_dev.pkl"
         dataset, vocab_size, tag_size = load_data(file, batch_size)
 
-    else:
+    elif data_op == "test":
         file = "../PickleFiles/Chinese_MSRA_NER_Corpus_test.pkl"
         dataset, vocab_size, tag_size = load_data(file, batch_size)
 
-    #     file = "../Data/weiboNER_2nd_conll.train.pkl"
-    #     dataset, vocab_size, tag_size = load_data(file)
+    else:
+        file = "../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl"
+        dataset, vocab_size, tag_size = load_data(file, batch_size)
 
     return dataset, vocab_size, tag_size
 
 
-def store_labels(model, dataset, op):
+def save_labels(model, dataset, name):
     """
     The method uses the trained model to generate predicted labels and
     writes both predicted labels and gold labels into corresponding pickle files.
@@ -123,14 +124,14 @@ def store_labels(model, dataset, op):
         effective_part = gold_label[:pred_len]
         gold_labels[s] = effective_part
 
-    filename = "../Data/bilstm_crf_labels_" + op + ".pkl"
+    filename = "../PickleFiles/Labels_Bilstm_crf_" + name + ".pkl"
     if os.path.exists(filename) == False:
         with open(filename, "wb") as file:
             pickle.dump(pred_labels, file)
             pickle.dump(gold_labels, file)
 
 
-def train_BiLSTM_CRF():
+def train_BiLSTM_CRF(batch_op):
     """
     This method trains the model and generates the predictions.
     """
@@ -138,11 +139,11 @@ def train_BiLSTM_CRF():
     UNIT_NUM = 64
     EPOCH = 20
     LEARNING_RATE = 0.005
-
+    BATCH_SIZE = {"weibo":64, "msra":10240, "twitter":2048}
     char_embed_dict = load_char_embeddings("../Data/vec.txt")
 
     # Use the augmented training set to train the model.
-    train_dataset, vocab_size, tag_size = load_data_helper("train")
+    train_dataset, vocab_size, tag_size = load_data_helper("train", BATCH_SIZE[batch_op])
     model = BiLSTM_CRF(UNIT_NUM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
     for e in range(EPOCH):
@@ -154,13 +155,13 @@ def train_BiLSTM_CRF():
                 print("Epoch:", e + 1, "Batch:", i + 1, "Loss:", loss.numpy())
 
     # Generate the predictions on the following datasets and write them into corresponding pickle files.
-    store_labels(model, train_dataset, "trainset")
+    save_labels(model, train_dataset, "trainset")
 
-    dev_dataset, _, _ = load_data_helper("dev")
-    store_labels(model, dev_dataset, "devset")
+    dev_dataset, _, _ = load_data_helper("dev", BATCH_SIZE[batch_op])
+    save_labels(model, dev_dataset, "devset")
 
-    test_dataset, _, _ = load_data_helper("test")
-    store_labels(model, test_dataset, "testset")
+    test_dataset, _, _ = load_data_helper("test", BATCH_SIZE[batch_op])
+    save_labels(model, test_dataset, "testset")
 
     # origin_train_dataset = load_data_helper("origin_train")
     # store_labels(model, origin_train_dataset, t)
