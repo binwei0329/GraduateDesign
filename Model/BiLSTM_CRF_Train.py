@@ -28,7 +28,7 @@ def load_data(file, batch_size):
         tags = pickle.load(f)
         data = pickle.load(f)
         label = pickle.load(f)
-
+    print(char_dic)
     data, label = format_data(data, label, tag_dic)
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
@@ -57,7 +57,6 @@ def load_data_helper(batch_size):
         label = pickle.load(file)
 
     length = len(data)
-
     with open("../PickleFiles/Chinese_Weibo_NER_Corpus_train.pkl", "rb") as file_train:
         tag_dic = pickle.load(file_train)
         char_dic = pickle.load(file_train)
@@ -68,6 +67,7 @@ def load_data_helper(batch_size):
 
     data_duplicate = data_train[length:]
     label_duplicate = label_train[length:]
+    print(char_dic)
 
     # Oversampling the named entities.
     for i in range(3):
@@ -194,14 +194,27 @@ def test_model(model, data_op, trainset):
         save_labels(model, test_dataset, "weibo_test")
 
 
-
-
-
-
-
-
 if __name__ == "__main__":
-    pass
+    # pass
+    # dataset, _, _ = load_data_helper(batch_size=64)
+    # load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl", batch_size=64)
+    # load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_test.pkl", batch_size=64)
+    # load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_dev.pkl", batch_size=64)
+
+    s, _, _= load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=10240)
+    # load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_test.pkl", batch_size=10240)
+
+    q, k, a = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=2048)
+    # load_data("../PickleFiles/English_Twitter_NER_Corpus_test.pkl", batch_size=2048)
+
+    # for i, (data, label) in enumerate(dataset):
+    #     print(data, "\n", label)
+    #
+    # for i, (data, label) in enumerate(s):
+    #     print(data, "\n", label)
+    #
+    # for i, (data, label) in enumerate(q):
+    #     print(data, "\n", label)
 
     # cond1 = os.path.exists("../Data/bilstm_crf_labels_testset.pkl")
     # cond2 = os.path.exists("../Data/bilstm_crf_labels_trainset.pkl")
