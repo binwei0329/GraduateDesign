@@ -72,7 +72,7 @@ def predict(model, labels, data):
     return predictions
 
 
-def calculate_metrics(predictions, labels):
+def calculate_metrics(predictions, labels, tag_dic):
     """
     This method gives the relevant evaluations on the performance of the model.
     :param predictions: predictions
@@ -92,8 +92,9 @@ def calculate_metrics(predictions, labels):
 
         # Find the all the gold labels.
         for k in range(len(label)):
-            # A label is not part of the named entity if it is 16.
-            if label[k] != 16:
+            # A label is not part of the named entity if it is tag_dic["O"].
+            if label[k] != tag_dic["O"]:
+
                 # Add such a label into temp list.
                 temp_label.append(label[k])
                 # If we reach the end of a sequence of labels, add the recognized item to
@@ -114,7 +115,7 @@ def calculate_metrics(predictions, labels):
 
         # The way how we find the predicted labels is analogous to the previous one.
         for m in range(len(pred)):
-            if pred[m] != 16:
+            if pred[m] != tag_dic["O"]:
                 temp_pred.append(pred[m])
                 if m == len(pred) - 1:
                     pred_list.append(temp_pred)
@@ -129,13 +130,15 @@ def calculate_metrics(predictions, labels):
         # both lists at the same positions are the correctly predicted items.
         temp_entity = []
         for s in range(len(label)):
-            if label[s] != 16 and pred[s] != 16:
+            if label[s] != tag_dic["O"] and pred[s] != tag_dic["O"]:
+
                 if label[s] == pred[s]:
                     temp_entity.append(label[s])
                     if s == len(label) - 1:
                         entity_list.append(temp_entity)
 
-            elif label[s] == pred[s] == 16:
+            elif label[s] == pred[s] == tag_dic["O"]:
+
                 if len(temp_entity) == 0:
                     continue
                 else:
