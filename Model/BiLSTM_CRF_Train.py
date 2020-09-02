@@ -19,7 +19,8 @@ def load_data(file, batch_size):
     """
     This method reads the pickle files and format them.
     :param file: file to be read
-    :return: the formatted dataset, tag size and vocab size
+    :param batch_size: the size of a batch
+    :return: the formatted dataset, tag size, vocab size and tag_dic
     """
     with open(file, "rb") as f:
         tag_dic = pickle.load(f)
@@ -34,19 +35,16 @@ def load_data(file, batch_size):
 
     dataset = tf.data.Dataset.from_tensor_slices((data, label))
     dataset = dataset.shuffle(len(data)).batch(batch_size, drop_remainder=True)
-    return dataset, vocab_size, tag_size
+    return dataset, vocab_size, tag_size, tag_dic
 
 
 def load_data_helper(batch_size):
-    # data_op,
     """
-    This method returns the formatted dataset, vocab size and tag size of different files.
-    :param op: the options
-    :return: formatted dataset, vocab size and tag size
+    This method returns the formatted dataset, vocab size, tag size and tag_dic of different files.
+    :param batch_size: the size of a batch
+    :return: formatted dataset, vocab size, tag size and tag_dic
     """
-    # If the option is "train", we apply undersampling and oversampling technique to get
-    # bigger datasets.
-    # if data_op == "train":
+    # If the option is "train", we apply undersampling and oversampling technique to get bigger datasets.
     with open("../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl", "rb") as file:
         _ = pickle.load(file)
         _ = pickle.load(file)
@@ -86,7 +84,7 @@ def load_data_helper(batch_size):
 
     dataset = tf.data.Dataset.from_tensor_slices((data_train, label_train))
     dataset = dataset.shuffle(len(data_train)).batch(batch_size, drop_remainder=True)
-    return dataset, vocab_size, tag_size
+    return dataset, vocab_size, tag_size, tag_dic
 
 
 def save_labels(model, dataset, name):
@@ -119,15 +117,17 @@ def save_labels(model, dataset, name):
 
 def train_BiLSTM_CRF(dataset, vocab_size, tag_size, epoch):
     """
-    This method trains the model and generates the predictions.
+    This method trains a model and generates the predictions.
+    :param dataset: a dataset for training
+    :param vocab_size: size of the vocabulary
+    :param tag size: number of tags
+    :param epoch: number of epoches
     """
     EMBED_DIM = 64
     UNIT_NUM = 64
     LEARNING_RATE = 0.005
     model = BiLSTM_CRF(UNIT_NUM, vocab_size, tag_size, EMBED_DIM)
     optimizer = tf.keras.optimizers.Adam(LEARNING_RATE)
-
-    # Use the augmented training set to train the model.
     for e in range(epoch):
         for i, (data_batch, label_batch) in enumerate(dataset):
             loss, logits, text_lens = train_one_step(model, data_batch, label_batch, optimizer)
@@ -137,10 +137,11 @@ def train_BiLSTM_CRF(dataset, vocab_size, tag_size, epoch):
     return model
 
 
-def report_perfomence(arg):
+def report_perfomence(arg, tag_dic):
     """
     This method gives relevant evaluations on the performance.
     :param arg: dataset to choose
+    :param tag_dic: tag dictionary
     """
     filename = "../PickleFiles/Labels_Bilstm_crf_" + arg + ".pkl"
 
@@ -148,50 +149,72 @@ def report_perfomence(arg):
         prediction = pickle.load(file)
         gold = pickle.load(file)
 
-    precision, recall, f1 = calculate_metrics(prediction, gold)
+    precision, recall, f1 = calculate_metrics(prediction, gold, tag_dic)
     print(arg, "performance precision: %.2f recall: %.2f f1score: %.2f" %(precision*100, recall*100, f1*100))
 
 
 def test_model(model, data_op, trainset):
+    """
+    This method tests the trained model on different data-sets.
+    :param model: a trained model
+    :param data_op: option of data-set
+    :param trainset: trainning set
+    :return: none
+    """
     if data_op == "msra":
         save_labels(model, trainset, "msra_train")
-        test_dataset, _, _ = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_test.pkl", batch_size=512)
+        test_dataset, _, _, _ = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_test.pkl", batch_size=512)
         save_labels(model, test_dataset, "msra_test")
 
     elif data_op == "twitter":
         save_labels(model, trainset, "twitter_train")
-        test_dataset, _, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=128)
+        test_dataset, _, _, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_test.pkl", batch_size=128)
         save_labels(model, test_dataset, "twitter_test")
 
-    else:
-        if data_op == "weibo":
-            save_labels(model, trainset, "weibo_train")
-        else:
-            save_labels(model, trainset, "weibo_train_origin")
 
-        dev_dataset, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_dev.pkl", batch_size=64)
+    elif data_op == "weibo":
+        save_labels(model, trainset, "weibo_train")
+        dev_dataset, _, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_dev.pkl", batch_size=64)
         save_labels(model, dev_dataset, "weibo_dev")
 
-        test_dataset, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_test.pkl", batch_size=64)
+        test_dataset, _, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_test.pkl", batch_size=64)
         save_labels(model, test_dataset, "weibo_test")
+
+    else:
+        save_labels(model, trainset, "weibo_train_origin")
+        dev_dataset, _, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_dev.pkl", batch_size=64)
+        save_labels(model, dev_dataset, "weibo_dev_origin")
+
+        test_dataset, _, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_test.pkl", batch_size=64)
+        save_labels(model, test_dataset, "weibo_test_origin")
 
 
 if __name__ == "__main__":
-    weibo_train, vocab_size, tag_size = load_data_helper(batch_size=64)
-    weibo_train_origin, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl", batch_size=64)
-    msra_train, vocab_size_m, tag_size_m = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=512)
-    twitter_train, vocab_size_t, tag_size_t = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=128)
 
+    weibo_train, vocab_size, tag_size, tag_dic = load_data_helper(batch_size=64)
+    weibo_train_origin, _, _, tag_dic_o = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_original_train.pkl", batch_size=64)
+    # msra_train, vocab_size_m, tag_size_m, tag_dic_m = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=512)
+    twitter_train, vocab_size_t, tag_size_t, tag_dic_t = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=128)
+    #
     model_o = train_BiLSTM_CRF(weibo_train_origin, vocab_size, tag_size, epoch=20)
     test_model(model_o, "weibo_origin", weibo_train_origin)
 
     model_w = train_BiLSTM_CRF(weibo_train, vocab_size, tag_size, epoch=20)
     test_model(model_w, "weibo", weibo_train)
-
-    model_m = train_BiLSTM_CRF(msra_train, vocab_size_m, tag_size_m, epoch=10)
-    test_model(model_m, "msra", msra_train)
-
-    model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=10)
+    #
+    # model_m = train_BiLSTM_CRF(msra_train, vocab_size_m, tag_size_m, epoch=10)
+    # test_model(model_m, "msra", msra_train)
+    #
+    model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=20)
     test_model(model_t, "twitter", twitter_train)
 
-
+    # report_perfomence("weibo_train_origin", tag_dic_o)
+    # report_perfomence("weibo_test_origin", tag_dic_o)
+    # report_perfomence("weibo_dev_origin", tag_dic_o)
+    # report_perfomence("weibo_train", tag_dic)
+    # report_perfomence("weibo_test", tag_dic)
+    # report_perfomence("weibo_dev", tag_dic)
+    # report_perfomence("msra_train", tag_dic_m)
+    # report_perfomence("msra_test", tag_dic_m)
+    # report_perfomence("twitter_train", tag_dic_t)
+    # report_perfomence("twitter_test", tag_dic_t)
