@@ -67,11 +67,6 @@ def read_file(file, data):
 
     tag_list = sorted(set(tag_list))
 
-    # if data == "weibo":
-        # Exclude the last tag symbol, "X".
-        # tag_list = tag_list[:-1]
-
-    # else:
     if data != "weibo":
         # Exclude the empty symbol.
         tag_list = tag_list[1:]
@@ -133,13 +128,6 @@ def convert_data(file, tag_dic, char_dic, sentence_list, tags):
                     l.append(tag_dic[k])
         label.append(l)
 
-        # data.append([char_dic[char] for char in sentence])
-        # label.append([tag_dic[t] for t in tag])
-        # print("ok")
-        # if s == 2022:
-        #     print(tag)
-        #     break
-
     # Set up the name for the corresponding pickle file.
     with open(file, "wb") as pkl:
         pickle.dump(tag_dic, pkl)
@@ -165,11 +153,10 @@ def format_data(data, label, tag_dic):
 def write_files(keyword):
     """
     This method writes the converted data from different datasets into corresponding pickle files.
+    :param keyword: keyword of options
     """
     if keyword == "weibo":
         tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_Weibo_NER_Corpus.train", keyword)
-        # print(char_dic)
-        # print(tag_dic)
         _, _, sentence_list_a, tags_a = read_file("../Data/weiboNER_2nd_conll.train", keyword)
         _, _, sentence_list_b, tags_b = read_file("../Data/weiboNER_2nd_conll.dev", keyword)
         _, _, sentence_list_c, tags_c = read_file("../Data/weiboNER_2nd_conll.test", keyword)
@@ -190,20 +177,10 @@ def write_files(keyword):
         convert_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", tag_dic, char_dic, sentence_list, tags)
         convert_data("../PickleFiles/English_Twitter_NER_Corpus_test.pkl", tag_dic, char_dic, sentence_list_a, tags_a)
 
-    print("Writing pickle files done.")
 
 if __name__ == "__main__":
     write_files("weibo")
     write_files("msra")
     write_files("twitter")
-    # tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
-    # tag_dic, char_dic, sentence_list, tags = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
-    # #
-    # tag_dic, char_dic, sentence_list, tags = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
-    # print(char_dic)
-    # print(tag_dic)
-    # convert_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", tag_dic, char_dic, sentence_list, tags)
+    print("Writing pickle files done.")
 
-    #
-    # print(tag_dic, "\n", sentence_list[0], "\n",tags[0])
-    # print(char_dic)
