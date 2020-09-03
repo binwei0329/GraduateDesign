@@ -76,7 +76,20 @@ def read_file(file, data):
 
     char_list = sorted(set(char_list))
     char_dic = {v:k for k, v in enumerate(char_list)}
+    sentence_list, tags = clean_data(sentence_list, tags)
+
     return tag_dic, char_dic, sentence_list, tags
+
+
+def clean_data(data, label):
+    data_ls = []
+    label_ls = []
+    for i in range(len(data)):
+        if len(data[i]) > 0 :
+            data_ls.append(data[i])
+            label_ls.append(label[i])
+
+    return data_ls, label_ls
 
 
 def load_char_embeddings(file):
