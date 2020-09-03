@@ -12,8 +12,8 @@ import pickle
 import numpy as np
 import tensorflow as tf
 from collections import Counter
-from Model.Preprocess import format_data, load_char_embeddings, clean_data
-from Model.BiLSTM_CRF import BiLSTM_CRF, train_one_step, predict, calculate_metrics
+from Model.Preprocess import format_data, clean_data
+from Model.BiLSTM_CRF import BiLSTM_CRF, train_one_step, predict
 
 def load_data(file, batch_size):
     """
@@ -31,10 +31,6 @@ def load_data(file, batch_size):
         label = pickle.load(f)
 
     data, label = clean_data(data, label)
-    # for d in data:
-    #     if len(d) == 0:
-    #         print("+")
-    #     # print(len(d), "\t", d)
     vocab_size = len(char_dic)
     tag_size = len(tag_dic)
     data, label = format_data(data, label, tag_dic)
@@ -144,22 +140,6 @@ def train_BiLSTM_CRF(dataset, vocab_size, tag_size, epoch):
     return model
 
 
-def report_perfomence(arg, tag_dic):
-    """
-    This method gives relevant evaluations on the performance.
-    :param arg: dataset to choose
-    :param tag_dic: tag dictionary
-    """
-    filename = "../PickleFiles/Labels_Bilstm_crf_" + arg + ".pkl"
-
-    with open(filename, "rb") as file:
-        prediction = pickle.load(file)
-        gold = pickle.load(file)
-
-    precision, recall, f1 = calculate_metrics(prediction, gold, tag_dic)
-    print(arg, "performance precision: %.2f recall: %.2f f1score: %.2f" %(precision*100, recall*100, f1*100))
-
-
 def test_model(model, data_op, trainset):
     """
     This method tests the trained model on different data-sets.
@@ -196,37 +176,22 @@ def test_model(model, data_op, trainset):
 
 
 if __name__ == "__main__":
-    # load_data("../PickleFiles/English_Twitter_NER_Corpus_test.pkl", batch_size=128)
+    weibo_train, vocab_size, tag_size, _ = load_data_helper(batch_size=64)
+    weibo_train_origin, _, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
+    msra_train, vocab_size_m, tag_size_m, _ = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=512)
+    twitter_train, vocab_size_t, tag_size_t, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=256)
 
-    weibo_train, vocab_size, tag_size, tag_dic = load_data_helper(batch_size=64)
-    weibo_train_origin, a, b, tag_dic_o = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
-    msra_train, vocab_size_m, tag_size_m, tag_dic_m = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=512)
-    twitter_train, vocab_size_t, tag_size_t, tag_dic_t = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=256)
-    # # model_m = train_BiLSTM_CRF(msra_train, vocab_size_m, tag_size_m, epoch=20)
-    # # test_model(model_m, "msra", msra_train)
+    model_m = train_BiLSTM_CRF(msra_train, vocab_size_m, tag_size_m, epoch=20)
+    test_model(model_m, "msra", msra_train)
 
-    # model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=20)
-    # test_model(model_t, "twitter", twitter_train)
+    model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=20)
+    test_model(model_t, "twitter", twitter_train)
 
-    # model_o = train_BiLSTM_CRF(weibo_train_origin, vocab_size, tag_size, epoch=20)
-    # test_model(model_o, "weibo_origin", weibo_train_origin)
-    #
-    # model_w = train_BiLSTM_CRF(weibo_train, vocab_size, tag_size, epoch=20)
-    # test_model(model_w, "weibo", weibo_train)
-    #
+    model_o = train_BiLSTM_CRF(weibo_train_origin, vocab_size, tag_size, epoch=20)
+    test_model(model_o, "weibo_origin", weibo_train_origin)
+
+    model_w = train_BiLSTM_CRF(weibo_train, vocab_size, tag_size, epoch=20)
+    test_model(model_w, "weibo", weibo_train)
 
 
-    # test_data, _, _, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", 128)
 
-    # test_dataset, _, _, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_test.pkl", batch_size=128)
-    # print(test_dataset)
-    report_perfomence("weibo_train_origin", tag_dic_o)
-    report_perfomence("weibo_test_origin", tag_dic_o)
-    report_perfomence("weibo_dev_origin", tag_dic_o)
-    report_perfomence("weibo_train", tag_dic)
-    report_perfomence("weibo_test", tag_dic)
-    report_perfomence("weibo_dev", tag_dic)
-    report_perfomence("msra_train", tag_dic_m)
-    report_perfomence("msra_test", tag_dic_m)
-    report_perfomence("twitter_train", tag_dic_t)
-    report_perfomence("twitter_test", tag_dic_t)
