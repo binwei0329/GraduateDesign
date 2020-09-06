@@ -47,9 +47,10 @@ def calculate_metrics(predictions, labels, tag_dic):
     label_list = []
     entity_list = []
 
-    for i in range(len(labels)):
+    for i in range(len(predictions)):
+        pred = predictions[i]
         label = labels[i]
-        temp_label = []
+        temp_pred, temp_label = [], []
 
         # Find the all the gold labels.
         for k in range(len(label)):
@@ -73,10 +74,6 @@ def calculate_metrics(predictions, labels, tag_dic):
                     label_list.append(temp_label)
                     temp_label = []
 
-
-    for i in range(len(predictions)):
-        temp_pred = []
-        pred = predictions[i]
         # The way how we find the predicted labels is analogous to the previous one.
         for m in range(len(pred)):
             if pred[m] != tag_dic["O"]:
@@ -92,40 +89,31 @@ def calculate_metrics(predictions, labels, tag_dic):
 
         # We iterate both predicted labels and gold labels, and those same items we find in
         # both lists at the same positions are the correctly predicted items.
-        # temp_entity = []
-        # for s in range(len(label)):
-        #     if label[s] != tag_dic["O"] and pred[s] != tag_dic["O"]:
-        #
-        #         if label[s] == pred[s]:
-        #             temp_entity.append(label[s])
-        #             if s == len(label) - 1:
-        #                 entity_list.append(temp_entity)
-        #
-        #     elif label[s] == pred[s] == tag_dic["O"]:
-        #
-        #         if len(temp_entity) == 0:
-        #             continue
-        #         else:
-        #             entity_list.append(temp_entity)
-        #             temp_entity = []
+        temp_entity = []
+        for s in range(len(label)):
+            if label[s] != tag_dic["O"] and pred[s] != tag_dic["O"]:
 
-    # for item in label_list:
-    #     print(item)
-    for item in labels:
-        print(item)
-    # for i in range(len(predictions)):
-    #     print(predictions[i])
-    #     print(labels[i])
+                if label[s] == pred[s]:
+                    temp_entity.append(label[s])
+                    if s == len(label) - 1:
+                        entity_list.append(temp_entity)
 
-    # label_list = extract_labels_helper(label_list, tag_dic)
-    # pred_list = extract_labels_helper(pred_list, tag_dic)
-    # entity_list = extract_labels_helper(entity_list, tag_dic)
-    #
-    # precision = len(entity_list) / len(pred_list)
-    # recall = len(entity_list) / len(label_list)
-    # f1 = 2 * precision * recall / (precision + recall)
+            elif label[s] == pred[s] == tag_dic["O"]:
 
-    # return precision, recall, f1, entity_list, pred_list, label_list
+                if len(temp_entity) == 0:
+                    continue
+                else:
+                    entity_list.append(temp_entity)
+                    temp_entity = []
+
+    label_list = extract_labels_helper(label_list, tag_dic)
+    pred_list = extract_labels_helper(pred_list, tag_dic)
+    entity_list = extract_labels_helper(entity_list, tag_dic)
+    return entity_list, pred_list, label_list
+
+
+file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "web_dev_origin",
+             "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
 
 
 def report_perfomence(arg, tag_dic):
@@ -140,117 +128,134 @@ def report_perfomence(arg, tag_dic):
         prediction = pickle.load(file)
         gold = pickle.load(file)
 
-    precision, recall, f1, entity_ls, pred_ls, label_ls = calculate_metrics(prediction, gold, tag_dic)
+    entity_ls, pred_ls, label_ls = calculate_metrics(prediction, gold, tag_dic)
 
-    # for item in entity_ls:
-    #     print(item)
-    # tag_dic_inv = {v:k for k, v in tag_dic.items()}
-    # print(tag_dic_inv)
-    stats = {}
-    # for item in label_ls:
-    # if len(tag_dic) == 17:
-    #     gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
-    #     for item in label_ls:
-    #         if item[0] == 0:
-    #             gpe_nam += 1
-    #         elif item[0] == 1:
-    #             gpe_nom += 1
-    #         elif item[0] == 2:
-    #             loc_nam += 1
-    #         elif item[0] == 3:
-    #             loc_nom += 1
-    #         elif item[0] == 4:
-    #             org_nam += 1
-    #         elif item[0] == 5:
-    #             org_nom += 1
-    #         elif item[0] == 6:
-    #             per_nam += 1
-    #         elif item[0] == 7:
-    #         # else:
-    #             per_nom += 1
-    #
-    #     stats["gpe_nom"] = gpe_nom
-    #     stats["gpe_nam"] = gpe_nam
-    #     stats["loc_nom"] = loc_nom
-    #     stats["loc_nam"] = loc_nam
-    #     stats["per_nom"] = per_nom
-    #     stats["per_nam"] = per_nam
-    #     stats["org_nom"] = org_nom
-    #     stats["org_nam"] = org_nam
-    #
-    # #     for item in pred_ls:
-    # #         if item[0] < 8:
-    # # print(tag_dic_inv)
+    #     for item in pred_ls:
+    #         if item[0] < 8:
     # print(stats)
+    # precision = len(entity_list) / len(pred_list)
+    # recall = len(entity_list) / len(label_list)
+    # f1 = 2 * precision * recall / (precision + recall)
+
+def get_statistics(tag_dic, label_list=None, tags=None):
+    stats = {}
+    if label_list != None:
+        if len(tag_dic) == 17:
+            gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
+            for item in label_list:
+                if item[0] == 0:
+                    gpe_nam += 1
+                elif item[0] == 1:
+                    gpe_nom += 1
+                elif item[0] == 2:
+                    loc_nam += 1
+                elif item[0] == 3:
+                    loc_nom += 1
+                elif item[0] == 4:
+                    org_nam += 1
+                elif item[0] == 5:
+                    org_nom += 1
+                elif item[0] == 6:
+                    per_nam += 1
+                elif item[0] == 7:
+                    per_nom += 1
+
+            stats["gpe_nom"] = gpe_nom
+            stats["gpe_nam"] = gpe_nam
+            stats["loc_nom"] = loc_nom
+            stats["loc_nam"] = loc_nam
+            stats["per_nom"] = per_nom
+            stats["per_nam"] = per_nam
+            stats["org_nom"] = org_nom
+            stats["org_nam"] = org_nam
+
+        else:
+            loc = org = per = 0
+            for item in label_list:
+                if item[0] == 0:
+                    loc += 1
+                elif item[0] == 1:
+                    org += 1
+                elif item[0] == 2:
+                    per += 1
+
+            stats["loc"] = loc
+            stats["org"] = org
+            stats["per"] = per
+    # {'B-LOC': 0, 'B-ORG': 1, 'B-PER': 2, 'I-LOC': 3, 'I-ORG': 4, 'I-PER': 5, 'O': 6}
+
+    elif tags != None:
+        if len(tag_dic) == 17:
+            gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
+            for tag in tags:
+                for item in tag:
+                    if item == "B-GPE.NAN":
+                        gpe_nam += 1
+                    elif item == "B-GPE.NOM":
+                        gpe_nom += 1
+                    elif item == "B-LOC.NAM":
+                        loc_nam += 1
+                    elif item == "B-LOC.NOM":
+                        loc_nom += 1
+                    elif item == "B-ORG.NAM":
+                        org_nam += 1
+                    elif item == "B-ORG.NOM":
+                        org_nom += 1
+                    elif item == "B-PER.NAM":
+                        per_nam += 1
+                    elif item == "B-PER.NOM":
+                        per_nom += 1
+
+            stats["gpe_nom"] = gpe_nom
+            stats["gpe_nam"] = gpe_nam
+            stats["loc_nom"] = loc_nom
+            stats["loc_nam"] = loc_nam
+            stats["per_nom"] = per_nom
+            stats["per_nam"] = per_nam
+            stats["org_nom"] = org_nom
+            stats["org_nam"] = org_nam
+
+        else:
+            loc = org = per = 0
+            for tag in tags:
+                for item in tag:
+                    if item == "B-LOC":
+                        loc += 1
+                    elif item == "B-ORG":
+                        org += 1
+                    elif item == "B-PER":
+                        per += 1
+
+            stats["loc"] = loc
+            stats["org"] = org
+            stats["per"] = per
+
+    print(stats)
 
 
-def get_statistics():
+if __name__ == "__main__":
     tag_dic_w,_, _, tags_weibo = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
     _, _, _, tags_weibo_origin = read_file("../Data/weiboNER_2nd_conll.train", "weibo_origin")
     _, _, _, tags_weibo_dev = read_file("../Data/weiboNER_2nd_conll.dev", "weibo")
     _, _, _, tags_weibo_test = read_file("../Data/weiboNER_2nd_conll.test", "weibo")
-    # print(len(tags_weibo))
-    # print(tags_weibo_origin)
-    # print(len(tags_weibo_dev))
-    # print(len(tags_weibo_test))
-    # stats = {}
-    # gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
-    # for item in tags_weibo_origin:
-    # #     print(item)
-    #     for lab in item:
-    #         if lab == "B-GPE.NON":
-    #             gpe_nom += 1
-    #         elif lab == "B-GPE.NAM":
-    #             gpe_nam += 1
-    #         elif lab == "B-LOC.NOM":
-    #             loc_nom += 1
-    #         elif lab == "B-LOC.NAM":
-    #             loc_nam += 1
-    #         elif lab == "B-PER.NOM":
-    #             per_nom += 1
-    #         elif lab == "B-PER.NAM":
-    #             per_nam += 1
-    #         elif lab == "B-ORG.NOM":
-    #             org_nom += 1
-    #         elif lab == "B-ORG.NAM":
-    #             org_nam += 1
-    # stats["gpe_nom"] = gpe_nom
-    # stats["gpe_nam"] = gpe_nam
-    # stats["loc_nom"] = loc_nom
-    # stats["loc_nam"] = loc_nam
-    # stats["per_nom"] = per_nom
-    # stats["per_nam"] = per_nam
-    # stats["org_nom"] = org_nom
-    # stats["org_nam"] = org_nam
-    #
-    # print(stats)
-
     tag_dic_m,_, _, tags_msra_train = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
     _,_, _, tags_msra_test = read_file("../Data/Chinese_MSRA_NER_Corpus.test", "msra")
     tag_dic_t,_, _, tags_twitter_train = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
     _,_, _, tags_twitter_test = read_file("../Data/English_Twitter_NER_Corpus.test", "weibo")
-    # print(len(tags_msra_test))
-    # print(len(tags_msra_train))
-    # print(len(tags_twitter_test))
-    # print(len(tags_twitter_train))
-    report_perfomence("weibo_test_origin", tag_dic_w)
-    # report_perfomence("weibo_test", tag_dic_w)
+    # print(tags_weibo)
+    #
+    # print(tag_dic_w)
+    # print(tag_dic_m)
+    # print(tag_dic_t)
+    #
+    # tag_dic_inv = {v: k for k, v in tag_dic_w.items()}
+    # print(tag_dic_inv)
+    #
+    # m = {v: k for k, v in tag_dic_m.items()}
+    # print(m)
+    #
+    # t =  {v: k for k, v in tag_dic_t.items()}
+    # print(t)
 
-    # report_perfomence("weibo_dev_origin", tag_dic_w)
-    # report_perfomence("weibo_dev", tag_dic_w)
-
-    # print(len(tags_weibo_origin))
-    # report_perfomence("weibo_train_origin", tag_dic_w)
-    # report_perfomence("weibo_train", tag_dic_w)
-    # report_perfomence("weibo_test", tag_dic_w)
-    # report_perfomence("msra_train", tag_dic_m)
-    # report_perfomence("msra_test", tag_dic_m)
-    # report_perfomence("twitter_train", tag_dic_t)
-    # report_perfomence("twitter_test", tag_dic_t)
-
-    # with open("Statistics.txt", "w") as file:
-
-
-if __name__ == "__main__":
-    get_statistics()
+    get_statistics(tag_dic_w, tags=tags_weibo_origin)
 
