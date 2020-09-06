@@ -115,7 +115,6 @@ def calculate_metrics(predictions, labels, tag_dic):
 
 def get_statistics(tag_dic, label_list):
     stats = {}
-    # # if label_list != None:
     if len(tag_dic) == 17:
         gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
         for item in label_list:
@@ -144,72 +143,25 @@ def get_statistics(tag_dic, label_list):
         stats["per_nam"] = per_nam
         stats["org_nom"] = org_nom
         stats["org_nam"] = org_nam
+        stats["gpe"] = gpe_nam + gpe_nom
+        stats["loc"] = loc_nam + loc_nom
+        stats["org"] = loc_nam + loc_nom
+        stats["per"] = per_nam + per_nom
 
     else:
         loc = org = per = 0
         for item in label_list:
-            if item[0] or tag_dic[item] == 0:
+            if item[0] == 0 or tag_dic[item] == 0:
                 loc += 1
-            elif item[0] or tag_dic[item] == 1:
+            elif item[0] == 1 or tag_dic[item] == 1:
                 org += 1
-            elif item[0] or tag_dic[item] == 2:
+            elif item[0] == 2 or tag_dic[item] == 2:
                 per += 1
 
         stats["loc"] = loc
         stats["org"] = org
         stats["per"] = per
 
-    # elif tags != None:
-    #     if len(tag_dic) == 17:
-    #         gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
-    #         for tag in tags:
-    #             for item in tag:
-    #                 if item.startswith("B-GPE.NAM"):
-    #                     gpe_nam += 1
-    #                 elif item == "B-GPE.NOM":
-    #                     gpe_nom += 1
-    #                 elif item == "B-LOC.NAM":
-    #                     loc_nam += 1
-    #                 elif item == "B-LOC.NOM":
-    #                     loc_nom += 1
-    #                 elif item == "B-ORG.NAM":
-    #                     org_nam += 1
-    #                 elif item == "B-ORG.NOM":
-    #                     org_nom += 1
-    #                 elif item == "B-PER.NAM":
-    #                     per_nam += 1
-    #                 elif item == "B-PER.NOM":
-    #                     per_nom += 1
-    #
-    #         stats["gpe_nom"] = gpe_nom
-    #         stats["gpe_nam"] = gpe_nam
-    #         stats["loc_nom"] = loc_nom
-    #         stats["loc_nam"] = loc_nam
-    #         stats["per_nom"] = per_nom
-    #         stats["per_nam"] = per_nam
-    #         stats["org_nom"] = org_nom
-    #         stats["org_nam"] = org_nam
-    #
-    #         stats["pge"] = gpe_nom + gpe_nam
-    #         stats["loc"] = loc_nom + loc_nam
-    #         stats["org"] = org_nom + org_nam
-    #         stats["per"] = per_nom + per_nam
-    #
-    #     else:
-    #         loc = org = per = 0
-    #         for tag in tags:
-    #             for item in tag:
-    #                 if item == "B-LOC":
-    #                     loc += 1
-    #                 elif item == "B-ORG":
-    #                     org += 1
-    #                 elif item == "B-PER":
-    #                     per += 1
-    #
-    #         stats["loc"] = loc
-    #         stats["org"] = org
-    #         stats["per"] = per
-    #
     return stats
 
 
@@ -233,42 +185,32 @@ def report_perfomence(arg, tag_dic):
     # print(precision, "\t", recall, "\t", f1)
     return precision, recall, f1
 
+
 if __name__ == "__main__":
-    # tag_dic_w,_, _, tags_weibo = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
-    # _, _, _, tags_weibo_origin = read_file("../Data/weiboNER_2nd_conll.train", "weibo_origin")
-    # _, _, _, tags_weibo_dev = read_file("../Data/weiboNER_2nd_conll.dev", "weibo")
-    # _, _, _, tags_weibo_test = read_file("../Data/weiboNER_2nd_conll.test", "weibo")
-    # tag_dic_m,_, _, tags_msra_train = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
-    # _,_, _, tags_msra_test = read_file("../Data/Chinese_MSRA_NER_Corpus.test", "msra")
-    # tag_dic_t,_, _, tags_twitter_train = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
-    # _,_, _, tags_twitter_test = read_file("../Data/English_Twitter_NER_Corpus.test", "weibo")
+    keyword = ["weibo", "msra", "twitter"]
+    if os.path.exists("../Data/Stats.txt"):
+        pass
+    else:
+        with open("../Data/Stats.txt", "w") as f:
+            for root, dirs, files in os.walk("../Data"):
+                for file in files:
+                    file_name = os.path.join(root, file)
+                    if file_name == "vec.txt":
+                        pass
+                    else:
+                        for kw in keyword:
+                            if kw in file_name.lower():
+                                tag_dic, _, _, tags = read_file(file_name, kw)
+                                tag_list = []
+                                for tag in tags:
+                                    tag_list.extend(tag)
+                                stats = get_statistics(tag_dic, tag_list)
+                                f.write(file_name)
+                                f.write("\n")
+                                f.write(str(stats))
+                                f.write("\n\n")
 
-    for root, dirs, files in os.walk("../Data"):
-        for file in files:
-            file_name = os.path.join(root, file)
-            # print(file_name)
-            if file_name == "vec.txt":
-                pass
-            else:
-                if "weibo" in file_name.lower():
 
-                    tag_dic, _, _, tags = read_file(file_name, "weibo")
-                    # print(tags)
-                    tag_list = []
-                    for tag in tags:
-                        tag_list.extend(tag)
-                    # print(tag_list)
-                    print(get_statistics(tag_dic, tag_list))
-            # break
-
-    # get_statistics(tag_dic_w, tags=tags_weibo_origin)
-    # get_statistics(tag_dic_w, tags=tags_weibo_dev)
-    # get_statistics(tag_dic_w, tags=tags_weibo_test)
-    # get_statistics(tag_dic_w, tags=tags_weibo)
-    # get_statistics(tag_dic_m, tags=tags_msra_train)
-    # get_statistics(tag_dic_m, tags=tags_msra_test)
-    # get_statistics(tag_dic_t, tags=tags_twitter_train)
-    # get_statistics(tag_dic_t, tags=tags_twitter_test)
     file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "weibo_dev_origin",
                  "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
 
