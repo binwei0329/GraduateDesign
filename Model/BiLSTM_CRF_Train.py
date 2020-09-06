@@ -191,3 +191,5 @@ if __name__ == "__main__":
     twitter_train, vocab_size_t, tag_size_t, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=256)
     model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=20)
     test_model(model_t, "twitter", twitter_train)
+
+    print("Model trained and predictions given.")

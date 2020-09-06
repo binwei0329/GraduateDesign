@@ -6,11 +6,20 @@ Author: Bin Wei
 Description: This is part of my graduate project, which tries to explore some
             models targeting NER tasks in Chinese social media.
 """
+
 import os
 import pickle
 from Model.Preprocess import read_file
 
 def extract_labels_helper(label_list, tag_dic):
+    """
+    This method extracts labels from predictions of the model, and
+    this method is aimed for situations like two or more predicted tags neighboring
+    each other, like "B-ORG I-ORG B-PER I-PER".
+    :param label_list: predicted labels
+    :param tag_dic: tag dictionary
+    :return: extracted labels
+    """
     label_ls = []
     num = (len(tag_dic) - 1) // 2
     for label in label_list:
@@ -36,14 +45,14 @@ def extract_labels_helper(label_list, tag_dic):
     return label_ls
 
 
-def calculate_metrics(predictions, labels, tag_dic):
+def extract_labels(predictions, labels, tag_dic):
     """
-    This method gives the relevant evaluations on the performance of the model.
+    This method entities from both labels and predictions.
     :param predictions: predictions
     :param labels: gold labels
-    :return: all the relevant performance evaluations
+    :tag_dic: tag dictionary for reference
+    :return: extracted entities
     """
-    # Prepare three lists to store predicted labels, gold labels and correctly-predicted labels.
     pred_list = []
     label_list = []
     entity_list = []
@@ -110,10 +119,17 @@ def calculate_metrics(predictions, labels, tag_dic):
     label_list = extract_labels_helper(label_list, tag_dic)
     pred_list = extract_labels_helper(pred_list, tag_dic)
     entity_list = extract_labels_helper(entity_list, tag_dic)
+
     return entity_list, pred_list, label_list
 
 
 def get_statistics(tag_dic, label_list):
+    """
+    This method gives the stats of entity of each type.
+    :param tag_dic: tag dictionary for reference
+    :param label_list: tag list or label list
+    :return: statistical info of every type of tag
+    """
     stats = {}
     if len(tag_dic) == 17:
         gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
@@ -170,6 +186,7 @@ def report_perfomence(arg, tag_dic):
     This method gives relevant evaluations on the performance.
     :param arg: dataset to choose
     :param tag_dic: tag dictionary
+    :return: precision, recall, f1
     """
     filename = "../PickleFiles/Labels_Bilstm_crf_" + arg + ".pkl"
 
@@ -177,7 +194,7 @@ def report_perfomence(arg, tag_dic):
         prediction = pickle.load(file)
         gold = pickle.load(file)
 
-    entity_ls, pred_ls, label_ls = calculate_metrics(prediction, gold, tag_dic)
+    entity_ls, pred_ls, label_ls = extract_labels(prediction, gold, tag_dic)
 
     precision = len(entity_ls) / len(pred_ls)
     recall = len(entity_ls) / len(label_ls)
@@ -195,6 +212,7 @@ if __name__ == "__main__":
     file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "weibo_dev_origin",
                  "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
 
+    # Write relevant stats into the file.
     if not os.path.exists("../Data/Stats.txt"):
         tag_dic_store = {}
         with open("../Data/Stats.txt", "w") as f:
@@ -218,6 +236,7 @@ if __name__ == "__main__":
                                 f.write(str(stats))
                                 f.write("\n\n")
 
+        # Write tag dictionaries for later reference.
         with open("../Data/Tag_Dictionary.txt", "w") as f:
             f.write(str(tag_dic_store))
 
@@ -228,6 +247,7 @@ if __name__ == "__main__":
             tag_dic_t = tag_dic_store["twitter"]
             tag_dic_w = tag_dic_store["weibo"]
 
+    # Add performance of model on every dataset to the stats file.
     if os.path.exists("../Data/Stats.txt"):
         with open("../Data/Stats.txt", "a") as f:
             f.write("BiLSTM_CRF Results:\n")
@@ -268,5 +288,5 @@ if __name__ == "__main__":
                     f.write("\t\t")
                     f.write(f1)
                     f.write("\t\t\n")
-#
 
+    print("All done.")
