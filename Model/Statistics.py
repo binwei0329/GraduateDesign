@@ -112,10 +112,6 @@ def calculate_metrics(predictions, labels, tag_dic):
     return entity_list, pred_list, label_list
 
 
-file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "web_dev_origin",
-             "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
-
-
 def report_perfomence(arg, tag_dic):
     """
     This method gives relevant evaluations on the performance.
@@ -130,12 +126,12 @@ def report_perfomence(arg, tag_dic):
 
     entity_ls, pred_ls, label_ls = calculate_metrics(prediction, gold, tag_dic)
 
-    #     for item in pred_ls:
-    #         if item[0] < 8:
-    # print(stats)
-    # precision = len(entity_list) / len(pred_list)
-    # recall = len(entity_list) / len(label_list)
-    # f1 = 2 * precision * recall / (precision + recall)
+    precision = len(entity_ls) / len(pred_ls)
+    recall = len(entity_ls) / len(label_ls)
+    f1 = 2 * precision * recall / (precision + recall)
+    print(precision, "\t", recall, "\t", f1)
+
+
 
 def get_statistics(tag_dic, label_list=None, tags=None):
     stats = {}
@@ -182,14 +178,13 @@ def get_statistics(tag_dic, label_list=None, tags=None):
             stats["loc"] = loc
             stats["org"] = org
             stats["per"] = per
-    # {'B-LOC': 0, 'B-ORG': 1, 'B-PER': 2, 'I-LOC': 3, 'I-ORG': 4, 'I-PER': 5, 'O': 6}
 
     elif tags != None:
         if len(tag_dic) == 17:
             gpe_nom = gpe_nam = loc_nom = loc_nam = per_nom = per_nam = org_nom = org_nam = 0
             for tag in tags:
                 for item in tag:
-                    if item == "B-GPE.NAN":
+                    if item.startswith("B-GPE.NAM"):
                         gpe_nam += 1
                     elif item == "B-GPE.NOM":
                         gpe_nom += 1
@@ -242,20 +237,24 @@ if __name__ == "__main__":
     _,_, _, tags_msra_test = read_file("../Data/Chinese_MSRA_NER_Corpus.test", "msra")
     tag_dic_t,_, _, tags_twitter_train = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
     _,_, _, tags_twitter_test = read_file("../Data/English_Twitter_NER_Corpus.test", "weibo")
-    # print(tags_weibo)
-    #
-    # print(tag_dic_w)
-    # print(tag_dic_m)
-    # print(tag_dic_t)
-    #
-    # tag_dic_inv = {v: k for k, v in tag_dic_w.items()}
-    # print(tag_dic_inv)
-    #
-    # m = {v: k for k, v in tag_dic_m.items()}
-    # print(m)
-    #
-    # t =  {v: k for k, v in tag_dic_t.items()}
-    # print(t)
 
     get_statistics(tag_dic_w, tags=tags_weibo_origin)
+    get_statistics(tag_dic_w, tags=tags_weibo_dev)
+    get_statistics(tag_dic_w, tags=tags_weibo_test)
+    get_statistics(tag_dic_w, tags=tags_weibo)
+    get_statistics(tag_dic_m, tags=tags_msra_train)
+    get_statistics(tag_dic_m, tags=tags_msra_test)
+    get_statistics(tag_dic_t, tags=tags_twitter_train)
+    get_statistics(tag_dic_t, tags=tags_twitter_test)
+    file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "weibo_dev_origin",
+                 "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
+
+    for file in file_list:
+        if file.startswith("msra"):
+            report_perfomence(file, tag_dic_m)
+        elif file.startswith("twitter"):
+            report_perfomence(file, tag_dic_t)
+        else:
+            report_perfomence(file, tag_dic_w)
+
 
