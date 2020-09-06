@@ -182,15 +182,21 @@ def report_perfomence(arg, tag_dic):
     precision = len(entity_ls) / len(pred_ls)
     recall = len(entity_ls) / len(label_ls)
     f1 = 2 * precision * recall / (precision + recall)
-    # print(precision, "\t", recall, "\t", f1)
+
+    precision = format(precision, ".4f")
+    recall = format(recall, ".4f")
+    f1 = format(f1, ".4f")
+
     return precision, recall, f1
 
 
 if __name__ == "__main__":
-    keyword = ["weibo", "msra", "twitter"]
-    if os.path.exists("../Data/Stats.txt"):
-        pass
-    else:
+    keyword = sorted(["weibo", "msra", "twitter"])
+    file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "weibo_dev_origin",
+                 "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
+
+    if not os.path.exists("../Data/Stats.txt"):
+        tag_dic_store = {}
         with open("../Data/Stats.txt", "w") as f:
             for root, dirs, files in os.walk("../Data"):
                 for file in files:
@@ -198,9 +204,11 @@ if __name__ == "__main__":
                     if file_name == "vec.txt":
                         pass
                     else:
+                        tag_dic = None
                         for kw in keyword:
                             if kw in file_name.lower():
                                 tag_dic, _, _, tags = read_file(file_name, kw)
+                                tag_dic_store[kw] = tag_dic
                                 tag_list = []
                                 for tag in tags:
                                     tag_list.extend(tag)
@@ -210,16 +218,55 @@ if __name__ == "__main__":
                                 f.write(str(stats))
                                 f.write("\n\n")
 
+        with open("../Data/Tag_Dictionary.txt", "w") as f:
+            f.write(str(tag_dic_store))
 
-    file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "weibo_dev_origin",
-                 "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
+    if os.path.exists("../Data/Tag_Dictionary.txt"):
+        with open("../Data/Tag_Dictionary.txt", "r") as f:
+            tag_dic_store = eval(f.readline())
+            tag_dic_m = tag_dic_store["msra"]
+            tag_dic_t = tag_dic_store["twitter"]
+            tag_dic_w = tag_dic_store["weibo"]
 
-    # for file in file_list:
-    #     if file.startswith("msra"):
-    #         report_perfomence(file, tag_dic_m)
-    #     elif file.startswith("twitter"):
-    #         report_perfomence(file, tag_dic_t)
-    #     else:
-    #         report_perfomence(file, tag_dic_w)
+    if os.path.exists("../Data/Stats.txt"):
+        with open("../Data/Stats.txt", "a") as f:
+            f.write("BiLSTM_CRF Results:\n")
+            f.write("Precision\t\tRecall\t\tF1\t\t\n")
+            for file in file_list:
+                if file.startswith("msra"):
+                    f.write("MSRA Corpus Performance:\n")
+                    precision, recall, f1 = report_perfomence(file, tag_dic_m)
+                    f.write(file)
+                    f.write("\n")
+                    f.write(precision)
+                    f.write("\t\t")
+                    f.write(recall)
+                    f.write("\t\t")
+                    f.write(f1)
+                    f.write("\t\t\n")
 
+                elif file.startswith("twitter"):
+                    f.write("Twitter Corpus Performance:\n")
+                    precision, recall, f1 = report_perfomence(file, tag_dic_t)
+                    f.write(file)
+                    f.write("\n")
+                    f.write(precision)
+                    f.write("\t\t")
+                    f.write(recall)
+                    f.write("\t\t")
+                    f.write(f1)
+                    f.write("\t\t\n")
+
+                else:
+                    f.write("Weibo Corpus Performance:\n")
+                    precision, recall, f1 = report_perfomence(file, tag_dic_w)
+                    f.write(file)
+                    f.write("\n")
+                    f.write(precision)
+                    f.write("\t\t")
+                    f.write(recall)
+                    f.write("\t\t")
+                    f.write(f1)
+                    f.write("\t\t\n")
+#
 

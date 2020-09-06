@@ -22,3 +22,35 @@
 ../Data\weiboNER_2nd_conll.train
 {'gpe_nom': 8, 'gpe_nam': 205, 'loc_nom': 51, 'loc_nam': 56, 'per_nom': 766, 'per_nam': 574, 'org_nom': 42, 'org_nam': 183, 'gpe': 213, 'loc': 107, 'org': 107, 'per': 1340}
 
+BiLSTM_CRF Results:
+Precision		Recall		F1		
+MSRA Corpus Performance:
+msra_test
+0.8883		0.8384		0.8626		
+MSRA Corpus Performance:
+msra_train
+0.9191		0.8947		0.9067		
+Twitter Corpus Performance:
+twitter_test
+0.3525		0.2155		0.2675		
+Twitter Corpus Performance:
+twitter_train
+0.9961		0.9975		0.9968		
+Weibo Corpus Performance:
+weibo_dev
+0.4661		0.4545		0.4603		
+Weibo Corpus Performance:
+weibo_dev_origin
+0.5326		0.4178		0.4683		
+Weibo Corpus Performance:
+weibo_test
+0.4938		0.4098		0.4479		
+Weibo Corpus Performance:
+weibo_test_origin
+0.5308		0.3520		0.4233		
+Weibo Corpus Performance:
+weibo_train
+0.8951		0.9542		0.9237		
+Weibo Corpus Performance:
+weibo_train_origin
+0.8322		0.6739		0.7448		
