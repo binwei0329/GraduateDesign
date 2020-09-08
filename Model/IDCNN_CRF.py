@@ -14,13 +14,11 @@ from tensorflow.keras.models import  Model
 from tensorflow.keras.layers import Embedding, Dense, Dropout, Input, Conv1D
 
 class IDCNN_CRF(tf.keras.Model):
-    def __init__(self, vocab_size, tag_size, max_len, embed_dim, drop_rate):
+    def __init__(self, vocab_size, tag_size, embed_dim):
         super(IDCNN_CRF, self).__init__()
         self.vocab_size = vocab_size
         self.tag_size = tag_size
-        self.max_len = max_len
         self.embed_dim = embed_dim
-        self.drop_rate = drop_rate
 
         self.embedding = Embedding(vocab_size, embed_dim)
         self.conv1 = Conv1D(filters=64, kernel_size=3, activation='relu', padding='same', dilation_rate=1)
