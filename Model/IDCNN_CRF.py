@@ -7,11 +7,10 @@ Description: This is part of my graduate project, which tries to explore some
             models targeting NER tasks in Chinese social media.
 """
 
+import numpy as np
 import tensorflow as tf
 import tensorflow_addons as tf_ad
-from tensorflow_addons.layers import CRF
-from tensorflow.keras.models import  Model
-from tensorflow.keras.layers import Embedding, Dense, Dropout, Input, Conv1D
+from tensorflow.keras.layers import Embedding, Dense, Dropout, Conv1D
 
 class IDCNN_CRF(tf.keras.Model):
     def __init__(self, vocab_size, tag_size, embed_dim):
@@ -21,9 +20,9 @@ class IDCNN_CRF(tf.keras.Model):
         self.embed_dim = embed_dim
 
         self.embedding = Embedding(vocab_size, embed_dim)
-        self.conv1 = Conv1D(filters=64, kernel_size=3, activation='relu', padding='same', dilation_rate=1)
-        self.conv2 = Conv1D(filters=128, kernel_size=3, activation='relu', padding='same', dilation_rate=1)
-        self.conv3 = Conv1D(filters=128, kernel_size=3, activation='relu', padding='same',dilation_rate=2)
+        self.conv1 = Conv1D(filters=256, kernel_size=2, activation='relu', padding='same', dilation_rate=1)
+        self.conv2 = Conv1D(filters=256, kernel_size=3, activation='relu', padding='same', dilation_rate=1)
+        self.conv3 = Conv1D(filters=512, kernel_size=4, activation='relu', padding='same',dilation_rate=2)
 
         self.dense = Dense(self.tag_size)
         self.transition_params = tf.Variable(tf.random.uniform(shape=(tag_size, tag_size)))
@@ -79,3 +78,30 @@ class IDCNN_CRF(tf.keras.Model):
     #     self.model.compile('adam',
     #                        loss=self.crf.loss_function,
     #                        metrics=[self.crf.accuracy])
+
+
+def train_one_step(model, data, label, opt):
+    with tf.GradientTape() as tape:
+        logits, text_lens, log_likelihood = model(data, label, training=True)
+        loss = - tf.reduce_mean(log_likelihood)
+    gradients = tape.gradient(loss, model.trainable_variables)
+    opt.apply_gradients(zip(gradients, model.trainable_variables))
+
+    return loss, logits, text_lens
+
+def predict(model, labels, data):
+    """
+    This method uses the trained model to generate predictions.
+    :param model: trained model
+    :param labels: gold labels
+    :param data: data
+    :return: the predictions
+    """
+    predictions = []
+    logits, text_lens, log_likelihood = model(data, labels)
+    for logit, text_len, label in zip(logits, text_lens, labels):
+        viterbi_path, _ = tf_ad.text.viterbi_decode(logit[:text_len], model.transition_params)
+        viterbi_path = np.array(viterbi_path)
+        predictions.append(viterbi_path)
+
+    return predictions
