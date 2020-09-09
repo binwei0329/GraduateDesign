@@ -281,7 +281,7 @@ if __name__ == "__main__":
                             f.write(str(stats))
                             f.write("\n\n")
             f.write("Performance dic records the performance metrics in the order of"
-                    "precision, recall and f1 score, and num dic records the recognized entity, predictions and gold labels.\n")
+                    " precision, recall and f1 score, and num dic records the recognized entity, predictions and gold labels.\n")
             f.write("BiLSTM_CRF Results:")
             for file in file_list:
                 if "twitter" in file:
