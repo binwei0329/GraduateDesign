@@ -181,14 +181,17 @@ def get_statistics(tag_dic, label_list):
     return stats
 
 
-def report_perfomence(arg, tag_dic):
+def report_perfomence(arg, tag_dic, cond=None):
     """
     This method gives relevant evaluations on the performance.
     :param arg: dataset to choose
     :param tag_dic: tag dictionary
     :return: precision, recall, f1
     """
-    filename = "../PickleFiles/Labels_Bilstm_crf_" + arg + ".pkl"
+    if cond == None:
+        filename = "../PickleFiles/Labels_Bilstm_crf_" + arg + ".pkl"
+    else:
+        filename = "../PickleFiles/Labels_Idcnn_crf_" + arg + ".pkl"
 
     with open(filename, "rb") as file:
         prediction = pickle.load(file)
@@ -280,6 +283,21 @@ if __name__ == "__main__":
                 else:
                     f.write("Weibo Corpus Performance:\n")
                     precision, recall, f1 = report_perfomence(file, tag_dic_w)
+                    f.write(file)
+                    f.write("\n")
+                    f.write(precision)
+                    f.write("\t\t")
+                    f.write(recall)
+                    f.write("\t\t")
+                    f.write(f1)
+                    f.write("\t\t\n")
+
+            f.write("BiLSTM_CRF Results:\n")
+            f.write("Precision\t\tRecall\t\tF1\t\t\n")
+            for file in file_list:
+                if file.startswith("weibo"):
+                    f.write("Weibo Corpus Performance:\n")
+                    precision, recall, f1 = report_perfomence(file, tag_dic_w, "idcnn_crf")
                     f.write(file)
                     f.write("\n")
                     f.write(precision)
