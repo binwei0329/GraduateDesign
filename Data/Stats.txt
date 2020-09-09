@@ -54,3 +54,23 @@ weibo_train
 Weibo Corpus Performance:
 weibo_train_origin
 0.8322		0.6739		0.7448		
+IDCNN_CRF Results:
+Precision		Recall		F1		
+Weibo Corpus Performance:
+weibo_dev
+0.5324		0.3083		0.3905		
+Weibo Corpus Performance:
+weibo_dev_origin
+0.5020		0.3388		0.4046		
+Weibo Corpus Performance:
+weibo_test
+0.6256		0.3342		0.4356		
+Weibo Corpus Performance:
+weibo_test_origin
+0.4963		0.3317		0.3976		
+Weibo Corpus Performance:
+weibo_train
+0.9920		0.9934		0.9927		
+Weibo Corpus Performance:
+weibo_train_origin
+0.9505		0.9536		0.9521		
