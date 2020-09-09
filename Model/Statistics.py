@@ -295,7 +295,7 @@ if __name__ == "__main__":
                 elif "msra" in file:
                     performance_dic, num_dic = report_perfomence(file, tag_dic_m)
                     f.write(file)
-                    f.write("Performance dic\n")
+                    f.write("\nPerformance dic\n")
                     f.write(str(performance_dic))
                     f.write("\nNum dic\n")
                     f.write(str(num_dic))
@@ -303,7 +303,7 @@ if __name__ == "__main__":
                 elif "weibo" in file:
                     performance_dic, num_dic = report_perfomence(file, tag_dic_w)
                     f.write(file)
-                    f.write("Performance dic\n")
+                    f.write("\nPerformance dic\n")
                     f.write(str(performance_dic))
                     f.write("\nNum dic\n")
                     f.write(str(num_dic))
@@ -313,7 +313,7 @@ if __name__ == "__main__":
                 if "weibo" in file:
                     performance_dic, num_dic = report_perfomence(file, tag_dic_w, "idcnn")
                     f.write(file)
-                    f.write("Performance dic\n")
+                    f.write("\nPerformance dic\n")
                     f.write(str(performance_dic))
                     f.write("\nNum dic\n")
                     f.write(str(num_dic))
