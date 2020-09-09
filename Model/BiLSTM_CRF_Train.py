@@ -109,8 +109,6 @@ def save_labels(model, dataset, name):
         effective_part = gold_label[:pred_len]
         gold_labels[s] = effective_part
 
-    # filename = "Labels_Bilstm_crf_" + name + ".pkl"
-
     filename = "../PickleFiles/Labels_Bilstm_crf_" + name + ".pkl"
     if os.path.exists(filename) == False:
         with open(filename, "wb") as file:
@@ -193,3 +191,4 @@ if __name__ == "__main__":
     test_model(model_t, "twitter", twitter_train)
 
     print("Model trained and predictions given.")
+
