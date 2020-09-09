@@ -11,6 +11,7 @@ import os
 import pickle
 import numpy as np
 import tensorflow as tf
+from Model.Statistics import extract_labels
 from Model.IDCNN_CRF import IDCNN_CRF, train_one_step, predict
 from Model.BiLSTM_CRF_Train import load_data, load_data_helper
 
@@ -56,7 +57,6 @@ def save_labels(model, dataset, name):
         effective_part = gold_label[:pred_len]
         gold_labels[s] = effective_part
 
-
     filename = "../PickleFiles/Labels_Idcnn_crf_" + name + ".pkl"
     if os.path.exists(filename) == False:
         with open(filename, "wb") as file:
@@ -82,13 +82,43 @@ def test_model(model, data_op, trainset):
         save_labels(model, test_dataset, "weibo_test_origin")
 
 
+def report_perfomence(arg, tag_dic):
+    """
+    This method gives relevant evaluations on the performance.
+    :param arg: dataset to choose
+    :param tag_dic: tag dictionary
+    :return: precision, recall, f1
+    """
+    filename = "../PickleFiles/Labels_Idcnn_crf_" + arg + ".pkl"
+
+    with open(filename, "rb") as file:
+        prediction = pickle.load(file)
+        gold = pickle.load(file)
+
+    entity_ls, pred_ls, label_ls = extract_labels(prediction, gold, tag_dic)
+
+    precision = len(entity_ls) / len(pred_ls)
+    recall = len(entity_ls) / len(label_ls)
+    f1 = 2 * precision * recall / (precision + recall)
+
+    precision = format(precision, ".4f")
+    recall = format(recall, ".4f")
+    f1 = format(f1, ".4f")
+
+    return precision, recall, f1
+
+
 if __name__ == "__main__":
     weibo_train, vocab_size, tag_size, tag_dic = load_data_helper(64)
-    model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 5)
+    model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 20)
     test_model(model, "weibo", weibo_train)
 
-    # weibo_train_origin, vocab_size_o, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
-    # model_o = train_IDCNN_CRF(weibo_train_origin, vocab_size_o, tag_size, epoch=20)
-    # test_model(model_o, "weibo_origin", weibo_train_origin)
+    weibo_train_origin, vocab_size_o, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
+    model_o = train_IDCNN_CRF(weibo_train_origin, vocab_size_o, tag_size, epoch=20)
+    test_model(model_o, "weibo_origin", weibo_train_origin)
 
     print("Model trained and predictions given.")
+
+
+
+
