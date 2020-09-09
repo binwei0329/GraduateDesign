@@ -292,7 +292,7 @@ if __name__ == "__main__":
                     f.write(f1)
                     f.write("\t\t\n")
 
-            f.write("BiLSTM_CRF Results:\n")
+            f.write("IDCNN_CRF Results:\n")
             f.write("Precision\t\tRecall\t\tF1\t\t\n")
             for file in file_list:
                 if file.startswith("weibo"):
@@ -308,3 +308,4 @@ if __name__ == "__main__":
                     f.write("\t\t\n")
 
     print("All done.")
+
