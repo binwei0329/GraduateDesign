@@ -92,22 +92,6 @@ def clean_data(data, label):
     return data_ls, label_ls
 
 
-def load_char_embeddings(file):
-    """
-    This method extracts the character embeddings from file.
-    :param file: the embedding file
-    :return: character embeddings
-    """
-    f = open(file,'r')
-    char_embed_dict = {}
-    for line in f:
-        splitLines = line.split()
-        char = splitLines[0]
-        wordEmbedding = np.array([float(value) for value in splitLines[1:]])
-        char_embed_dict[char] = wordEmbedding
-    return char_embed_dict
-
-
 def save_data(file, tag_dic, char_dic, sentence_list, tags):
     """
     This method writes all possibly relevant dictionaries and data into pickle files.
