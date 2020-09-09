@@ -20,9 +20,12 @@ class IDCNN_CRF(tf.keras.Model):
         self.embed_dim = embed_dim
 
         self.embedding = Embedding(vocab_size, embed_dim)
-        self.conv1 = Conv1D(filters=256, kernel_size=2, activation='relu', padding='same', dilation_rate=1)
-        self.conv2 = Conv1D(filters=256, kernel_size=3, activation='relu', padding='same', dilation_rate=1)
-        self.conv3 = Conv1D(filters=512, kernel_size=4, activation='relu', padding='same',dilation_rate=2)
+        self.conv1 = Conv1D(filters=256, kernel_size=2, activation='relu', padding='same',
+                            dilation_rate=1, kernel_regularizer='l2')
+        self.conv2 = Conv1D(filters=256, kernel_size=3, activation='relu', padding='same',
+                            dilation_rate=1, kernel_regularizer='l2')
+        self.conv3 = Conv1D(filters=512, kernel_size=4, activation='relu', padding='same',
+                            dilation_rate=2, kernel_regularizer='l2')
 
         self.dense = Dense(self.tag_size)
         self.transition_params = tf.Variable(tf.random.uniform(shape=(tag_size, tag_size)))
@@ -46,39 +49,6 @@ class IDCNN_CRF(tf.keras.Model):
         else:
             return logits, text_lens
 
-    # def creat_model(self):
-    #     """
-    #     本网络的机构采用的是，
-    #        Embedding
-    #        直接进行2个常规一维卷积操作
-    #        接上一个空洞卷积操作
-    #        连接全连接层
-    #        最后连接CRF层
-    #     kernel_size 采用2、3、4
-    #     cnn  特征层数: 64、128、128
-    #     """
-    #
-    #     inputs = Input(shape=(self.max_len,))
-    #     x = Embedding(input_dim=self.vocab_size, output_dim=self.embedding_dim)(inputs)
-    #     x = Conv1D(filters=64, kernel_size=3, activation='relu', padding='same', dilation_rate=1)(x)
-    #     x = Conv1D(filters=128, kernel_size=3, activation='relu', padding='same', dilation_rate=1)(x)
-    #     x = Conv1D(filters=128, kernel_size=3, activation='relu', padding='same',dilation_rate=2)(x)
-    #
-    #     x = Dropout(self.drop_rate)(x)
-    #     x = Dense(self.tag_size)(x)
-    #     self.crf = CRF(self.tag_size, sparse_target=False)
-    #     x = self.crf(x)
-    #     self.model = Model(inputs=inputs, outputs=x)
-    #     self.model.summary()
-    #     self.compile()
-    #     return self.model
-    #
-    #
-    # def compile(self):
-    #     self.model.compile('adam',
-    #                        loss=self.crf.loss_function,
-    #                        metrics=[self.crf.accuracy])
-
 
 def train_one_step(model, data, label, opt):
     with tf.GradientTape() as tape:
@@ -88,6 +58,7 @@ def train_one_step(model, data, label, opt):
     opt.apply_gradients(zip(gradients, model.trainable_variables))
 
     return loss, logits, text_lens
+
 
 def predict(model, labels, data):
     """
@@ -105,3 +76,4 @@ def predict(model, labels, data):
         predictions.append(viterbi_path)
 
     return predictions
+

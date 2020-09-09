@@ -181,6 +181,32 @@ def get_statistics(tag_dic, label_list):
     return stats
 
 
+def report_performance_helper(ls, tag_dic):
+    if len(tag_dic) == 17:
+        gpe = loc = org = per = 0
+        for item in ls:
+            if item[0] < 2:
+                gpe += 1
+            elif 2 <= item[0] < 4:
+                loc += 1
+            elif 4 <= item[0] < 6:
+                org += 1
+            elif item[0] < 8:
+                per += 1
+        return {"gpe":gpe, "loc":loc, "org":org, "per":per}
+
+    else:
+        loc = org = per = 0
+        for item in ls:
+            if item[0] == 0:
+                loc += 1
+            elif item[0] == 1:
+                org += 1
+            elif item[0] == 2:
+                per += 1
+        return {"loc":loc, "org":org, "per":per}
+
+
 def report_perfomence(arg, tag_dic, cond=None):
     """
     This method gives relevant evaluations on the performance.
@@ -207,13 +233,32 @@ def report_perfomence(arg, tag_dic, cond=None):
     recall = format(recall, ".4f")
     f1 = format(f1, ".4f")
 
-    return precision, recall, f1
+    entity_dic = report_performance_helper(entity_ls, tag_dic)
+    pred_dic = report_performance_helper(pred_ls, tag_dic)
+    label_dic = report_performance_helper(label_ls, tag_dic)
+    performance_dic = {}
+    for k, v in entity_dic.items():
+        if pred_dic[k] == 0 or entity_dic[k] == 0:
+            pre = rec = f = 0
+        else:
+            pre = entity_dic[k] / pred_dic[k]
+            rec = entity_dic[k] / label_dic[k]
+            f = 2 * pre * rec / (pre + rec)
+        performance_dic[k] = [format(pre, ".4f"), format(rec, ".4f"), format(f, ".4f")]
+    performance_dic["Overall"] = [precision, recall, f1]
+    num_dic = {"entity":entity_dic, "pred":pred_dic, "label":label_dic}
+
+    return performance_dic, num_dic
 
 
 if __name__ == "__main__":
     keyword = sorted(["weibo", "msra", "twitter"])
     file_list = ["msra_test", "msra_train", "twitter_test", "twitter_train", "weibo_dev", "weibo_dev_origin",
                  "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
+
+    tag_dic_m, _, _, _ = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
+    tag_dic_t, _, _, _ = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
+    tag_dic_w, _, _, _ = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
 
     # Write relevant stats into the file.
     if not os.path.exists("../Data/Stats.txt"):
@@ -222,90 +267,57 @@ if __name__ == "__main__":
             for root, dirs, files in os.walk("../Data"):
                 for file in files:
                     file_name = os.path.join(root, file)
-                    if file_name == "vec.txt":
-                        pass
-                    else:
-                        tag_dic = None
-                        for kw in keyword:
-                            if kw in file_name.lower():
-                                tag_dic, _, _, tags = read_file(file_name, kw)
-                                tag_dic_store[kw] = tag_dic
-                                tag_list = []
-                                for tag in tags:
-                                    tag_list.extend(tag)
-                                stats = get_statistics(tag_dic, tag_list)
-                                f.write(file_name)
-                                f.write("\n")
-                                f.write(str(stats))
-                                f.write("\n\n")
-
-        # Write tag dictionaries for later reference.
-        with open("../Data/Tag_Dictionary.txt", "w") as f:
-            f.write(str(tag_dic_store))
-
-    if os.path.exists("../Data/Tag_Dictionary.txt"):
-        with open("../Data/Tag_Dictionary.txt", "r") as f:
-            tag_dic_store = eval(f.readline())
-            tag_dic_m = tag_dic_store["msra"]
-            tag_dic_t = tag_dic_store["twitter"]
-            tag_dic_w = tag_dic_store["weibo"]
-
-    # Add performance of model on every dataset to the stats file.
-    if os.path.exists("../Data/Stats.txt"):
-        with open("../Data/Stats.txt", "a") as f:
-            f.write("BiLSTM_CRF Results:\n")
-            f.write("Precision\t\tRecall\t\tF1\t\t\n")
+                    tag_dic = None
+                    for kw in keyword:
+                        if kw in file_name.lower():
+                            tag_dic, _, _, tags = read_file(file_name, kw)
+                            tag_dic_store[kw] = tag_dic
+                            tag_list = []
+                            for tag in tags:
+                                tag_list.extend(tag)
+                            stats = get_statistics(tag_dic, tag_list)
+                            f.write(file_name)
+                            f.write("\n")
+                            f.write(str(stats))
+                            f.write("\n\n")
+            f.write("Performance dic records the performance metrics in the order of"
+                    "precision, recall and f1 score, and num dic records the recognized entity, predictions and gold labels.\n")
+            f.write("BiLSTM_CRF Results:")
             for file in file_list:
-                if file.startswith("msra"):
-                    f.write("MSRA Corpus Performance:\n")
-                    precision, recall, f1 = report_perfomence(file, tag_dic_m)
+                if "twitter" in file:
+                    performance_dic, num_dic = report_perfomence(file, tag_dic_t)
                     f.write(file)
-                    f.write("\n")
-                    f.write(precision)
-                    f.write("\t\t")
-                    f.write(recall)
-                    f.write("\t\t")
-                    f.write(f1)
-                    f.write("\t\t\n")
-
-                elif file.startswith("twitter"):
-                    f.write("Twitter Corpus Performance:\n")
-                    precision, recall, f1 = report_perfomence(file, tag_dic_t)
+                    f.write("\nPerformance dic\n")
+                    f.write(str(performance_dic))
+                    f.write("\nNum dic\n")
+                    f.write(str(num_dic))
+                    f.write("\n\n")
+                elif "msra" in file:
+                    performance_dic, num_dic = report_perfomence(file, tag_dic_m)
                     f.write(file)
-                    f.write("\n")
-                    f.write(precision)
-                    f.write("\t\t")
-                    f.write(recall)
-                    f.write("\t\t")
-                    f.write(f1)
-                    f.write("\t\t\n")
-
-                else:
-                    f.write("Weibo Corpus Performance:\n")
-                    precision, recall, f1 = report_perfomence(file, tag_dic_w)
+                    f.write("Performance dic\n")
+                    f.write(str(performance_dic))
+                    f.write("\nNum dic\n")
+                    f.write(str(num_dic))
+                    f.write("\n\n")
+                elif "weibo" in file:
+                    performance_dic, num_dic = report_perfomence(file, tag_dic_w)
                     f.write(file)
-                    f.write("\n")
-                    f.write(precision)
-                    f.write("\t\t")
-                    f.write(recall)
-                    f.write("\t\t")
-                    f.write(f1)
-                    f.write("\t\t\n")
-
-            f.write("IDCNN_CRF Results:\n")
-            f.write("Precision\t\tRecall\t\tF1\t\t\n")
+                    f.write("Performance dic\n")
+                    f.write(str(performance_dic))
+                    f.write("\nNum dic\n")
+                    f.write(str(num_dic))
+                    f.write("\n\n")
+            f.write("IDCNN_CRF Results:")
             for file in file_list:
-                if file.startswith("weibo"):
-                    f.write("Weibo Corpus Performance:\n")
-                    precision, recall, f1 = report_perfomence(file, tag_dic_w, "idcnn_crf")
+                if "weibo" in file:
+                    performance_dic, num_dic = report_perfomence(file, tag_dic_w, "idcnn")
                     f.write(file)
-                    f.write("\n")
-                    f.write(precision)
-                    f.write("\t\t")
-                    f.write(recall)
-                    f.write("\t\t")
-                    f.write(f1)
-                    f.write("\t\t\n")
+                    f.write("Performance dic\n")
+                    f.write(str(performance_dic))
+                    f.write("\nNum dic\n")
+                    f.write(str(num_dic))
+                    f.write("\n\n")
 
     print("All done.")
 
