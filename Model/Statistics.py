@@ -277,6 +277,8 @@ if __name__ == "__main__":
                                 tag_list.extend(tag)
                             stats = get_statistics(tag_dic, tag_list)
                             f.write(file_name)
+                            f.write("\tTotal number of instances: ")
+                            f.write(str(len(tags)))
                             f.write("\n")
                             f.write(str(stats))
                             f.write("\n\n")

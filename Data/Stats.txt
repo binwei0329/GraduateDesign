@@ -1,25 +1,25 @@
-../Data\Chinese_MSRA_NER_Corpus.test
+../Data\Chinese_MSRA_NER_Corpus.test	Total number of instances: 3442
 {'loc': 2886, 'org': 1331, 'per': 1973}
 
-../Data\Chinese_MSRA_NER_Corpus.train
+../Data\Chinese_MSRA_NER_Corpus.train	Total number of instances: 45000
 {'loc': 36860, 'org': 20584, 'per': 17615}
 
-../Data\Chinese_Weibo_NER_Corpus.train
+../Data\Chinese_Weibo_NER_Corpus.train	Total number of instances: 2024
 {'gpe_nom': 15, 'gpe_nam': 547, 'loc_nom': 66, 'loc_nam': 162, 'per_nom': 990, 'per_nam': 1022, 'org_nom': 49, 'org_nam': 243, 'gpe': 562, 'loc': 228, 'org': 292, 'per': 2012}
 
-../Data\English_Twitter_NER_Corpus.test
+../Data\English_Twitter_NER_Corpus.test	Total number of instances: 2137
 {'loc': 1385, 'org': 1497, 'per': 1800}
 
-../Data\English_Twitter_NER_Corpus.train
+../Data\English_Twitter_NER_Corpus.train	Total number of instances: 5199
 {'loc': 1128, 'org': 1901, 'per': 3801}
 
-../Data\weiboNER_2nd_conll.dev
+../Data\weiboNER_2nd_conll.dev	Total number of instances: 270
 {'gpe_nom': 1, 'gpe_nam': 26, 'loc_nom': 6, 'loc_nam': 6, 'per_nom': 208, 'per_nam': 90, 'org_nom': 5, 'org_nam': 47, 'gpe': 27, 'loc': 12, 'org': 52, 'per': 298}
 
-../Data\weiboNER_2nd_conll.test
+../Data\weiboNER_2nd_conll.test	Total number of instances: 270
 {'gpe_nom': 2, 'gpe_nam': 47, 'loc_nom': 9, 'loc_nam': 19, 'per_nom': 170, 'per_nam': 111, 'org_nom': 17, 'org_nam': 39, 'gpe': 49, 'loc': 28, 'org': 56, 'per': 281}
 
-../Data\weiboNER_2nd_conll.train
+../Data\weiboNER_2nd_conll.train	Total number of instances: 1350
 {'gpe_nom': 8, 'gpe_nam': 205, 'loc_nom': 51, 'loc_nam': 56, 'per_nom': 766, 'per_nam': 574, 'org_nom': 42, 'org_nam': 183, 'gpe': 213, 'loc': 107, 'org': 225, 'per': 1340}
 
 Performance dic records the performance metrics in the order of precision, recall and f1 score, and num dic records the recognized entity, predictions and gold labels.
