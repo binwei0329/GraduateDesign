@@ -161,7 +161,7 @@ def get_statistics(tag_dic, label_list):
         stats["org_nam"] = org_nam
         stats["gpe"] = gpe_nam + gpe_nom
         stats["loc"] = loc_nam + loc_nom
-        stats["org"] = loc_nam + loc_nom
+        stats["org"] = org_nam + org_nom
         stats["per"] = per_nam + per_nom
 
     else:
