@@ -257,8 +257,8 @@ if __name__ == "__main__":
                  "weibo_test", "weibo_test_origin", "weibo_train", "weibo_train_origin"]
 
     tag_dic_m, _, _, _ = read_file("../Data/Chinese_MSRA_NER_Corpus.train", "msra")
-    tag_dic_t, _, _, _ = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
-    tag_dic_w, _, _, _ = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
+    tag_dic_w, _, _, _ = read_file("../Data/Chinese_Weibo_NER_Corpus.train", "weibo")
+    tag_dic_t, _, _, _ = read_file("../Data/English_Twitter_NER_Corpus.train", "twitter")
 
     # Write relevant stats into the file.
     if not os.path.exists("../Data/Stats.txt"):
@@ -284,7 +284,7 @@ if __name__ == "__main__":
                             f.write("\n\n")
             f.write("Performance dic records the performance metrics in the order of"
                     " precision, recall and f1 score, and num dic records the recognized entity, predictions and gold labels.\n")
-            f.write("BiLSTM_CRF Results:")
+            f.write("BiLSTM_CRF Results:\n")
             for file in file_list:
                 if "twitter" in file:
                     performance_dic, num_dic = report_perfomence(file, tag_dic_t)
