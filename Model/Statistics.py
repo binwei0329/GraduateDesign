@@ -310,7 +310,7 @@ if __name__ == "__main__":
                     f.write("\nNum dic\n")
                     f.write(str(num_dic))
                     f.write("\n\n")
-            f.write("IDCNN_CRF Results:")
+            f.write("IDCNN_CRF Results:\n")
             for file in file_list:
                 if "weibo" in file:
                     performance_dic, num_dic = report_perfomence(file, tag_dic_w, "idcnn")
