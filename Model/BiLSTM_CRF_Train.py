@@ -175,20 +175,20 @@ def test_model(model, data_op, trainset):
 
 if __name__ == "__main__":
     weibo_train, vocab_size, tag_size, _ = load_data_helper(batch_size=64)
-    # model_w = train_BiLSTM_CRF(weibo_train, vocab_size, tag_size, epoch=20)
-    # test_model(model_w, "weibo", weibo_train)
+    model_w = train_BiLSTM_CRF(weibo_train, vocab_size, tag_size, epoch=20)
+    test_model(model_w, "weibo", weibo_train)
 
     weibo_train_origin, vocab_size_o, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
     model_o = train_BiLSTM_CRF(weibo_train_origin, vocab_size_o, tag_size, epoch=20)
     test_model(model_o, "weibo_origin", weibo_train_origin)
 
-    # msra_train, vocab_size_m, tag_size_m, _ = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=512)
-    # model_m = train_BiLSTM_CRF(msra_train, vocab_size_m, tag_size_m, epoch=20)
-    # test_model(model_m, "msra", msra_train)
-    #
-    # twitter_train, vocab_size_t, tag_size_t, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=256)
-    # model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=20)
-    # test_model(model_t, "twitter", twitter_train)
+    msra_train, vocab_size_m, tag_size_m, _ = load_data("../PickleFiles/Chinese_MSRA_NER_Corpus_train.pkl", batch_size=512)
+    model_m = train_BiLSTM_CRF(msra_train, vocab_size_m, tag_size_m, epoch=20)
+    test_model(model_m, "msra", msra_train)
+    
+    twitter_train, vocab_size_t, tag_size_t, _ = load_data("../PickleFiles/English_Twitter_NER_Corpus_train.pkl", batch_size=256)
+    model_t = train_BiLSTM_CRF(twitter_train, vocab_size_t, tag_size_t, epoch=20)
+    test_model(model_t, "twitter", twitter_train)
 
     print("Model trained and predictions given.")
 
