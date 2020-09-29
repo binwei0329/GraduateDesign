@@ -8,6 +8,7 @@ Description: This is part of my graduate project, which tries to explore some
 """
 
 import os
+import time
 import pickle
 import numpy as np
 import tensorflow as tf
@@ -113,12 +114,13 @@ if __name__ == "__main__":
     model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 20)
     test_model(model, "weibo", weibo_train)
 
+    start = time.asctime(time.localtime(time.time()))
+    print(start)
     weibo_train_origin, vocab_size_o, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
     model_o = train_IDCNN_CRF(weibo_train_origin, vocab_size_o, tag_size, epoch=20)
+    end = time.asctime(time.localtime(time.time()))
+    print(end)
+    # print(model_o.summary)
     test_model(model_o, "weibo_origin", weibo_train_origin)
-
     print("Model trained and predictions given.")
-
-
-
 
