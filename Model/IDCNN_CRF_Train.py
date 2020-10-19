@@ -111,16 +111,16 @@ def report_perfomence(arg, tag_dic):
 
 if __name__ == "__main__":
     weibo_train, vocab_size, tag_size, tag_dic = load_data_helper(64)
-    model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 20)
+    model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 10)
     test_model(model, "weibo", weibo_train)
 
     start = time.asctime(time.localtime(time.time()))
     print(start)
     weibo_train_origin, vocab_size_o, _, _ = load_data("../PickleFiles/Chinese_Weibo_NER_Corpus_train_origin.pkl", batch_size=64)
-    model_o = train_IDCNN_CRF(weibo_train_origin, vocab_size_o, tag_size, epoch=20)
+    model_o = train_IDCNN_CRF(weibo_train_origin, vocab_size_o, tag_size, 10)
     end = time.asctime(time.localtime(time.time()))
     print(end)
-    # print(model_o.summary)
+    print(model_o.summary())
     test_model(model_o, "weibo_origin", weibo_train_origin)
     print("Model trained and predictions given.")
 
