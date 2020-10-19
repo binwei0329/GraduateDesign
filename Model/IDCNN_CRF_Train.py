@@ -111,8 +111,8 @@ def report_perfomence(arg, tag_dic):
 
 if __name__ == "__main__":
     weibo_train, vocab_size, tag_size, tag_dic = load_data_helper(64)
-    model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 10)
-    test_model(model, "weibo", weibo_train)
+    # model = train_IDCNN_CRF(weibo_train, vocab_size, tag_size, 10)
+    # test_model(model, "weibo", weibo_train)
 
     start = time.asctime(time.localtime(time.time()))
     print(start)

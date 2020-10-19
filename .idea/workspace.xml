@@ -38,7 +38,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.CommitDialog" />
   </component>
-  <component name="RunManager" selected="Python.IDCNN_CRF_Train">
+  <component name="RunManager" selected="Python.Weibo_Message_Extraction">
     <configuration name="BiLSTM_CRF_Train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="GraduateDesign" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -127,7 +127,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="Weibo_Message_Extraction" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="GraduateDesign" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -140,7 +140,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/Test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Model/Weibo_Message_Extraction.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -151,11 +151,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Weibo_Message_Extraction" />
+        <item itemvalue="Python.Statistics" />
         <item itemvalue="Python.IDCNN_CRF_Train" />
         <item itemvalue="Python.BiLSTM_CRF_Train" />
-        <item itemvalue="Python.Statistics" />
         <item itemvalue="Python.Preprocess" />
-        <item itemvalue="Python.Test" />
       </list>
     </recent_temporary>
   </component>
@@ -247,7 +247,14 @@
       <workItem from="1600952095786" duration="22000" />
       <workItem from="1601005534612" duration="3305000" />
       <workItem from="1601174960057" duration="1855000" />
-      <workItem from="1601372504304" duration="2673000" />
+      <workItem from="1601372504304" duration="3373000" />
+      <workItem from="1601456714780" duration="6000" />
+      <workItem from="1602041191616" duration="820000" />
+      <workItem from="1602127976922" duration="5000" />
+      <workItem from="1602488025403" duration="641000" />
+      <workItem from="1602904413140" duration="1370000" />
+      <workItem from="1603072017015" duration="542000" />
+      <workItem from="1603072860287" duration="10227000" />
     </task>
     <servers />
   </component>
@@ -259,30 +266,30 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="1142" y="325" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1599053552377" />
-    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1599821970754">
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1603082591831">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599821970754" />
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1603082591831" />
     <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1597646800736">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1597646800736" />
-    <state width="1244" height="615" key="GridCell.Tab.0.bottom" timestamp="1601375477575">
+    <state width="1921" height="983" key="GridCell.Tab.0.bottom" timestamp="1603095846792">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1244" height="615" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1601375477575" />
-    <state width="1244" height="615" key="GridCell.Tab.0.center" timestamp="1601375477575">
+    <state width="1921" height="983" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1603095846792" />
+    <state width="1921" height="983" key="GridCell.Tab.0.center" timestamp="1603095846792">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1244" height="615" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1601375477575" />
-    <state width="1244" height="615" key="GridCell.Tab.0.left" timestamp="1601375477575">
+    <state width="1921" height="983" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1603095846792" />
+    <state width="1921" height="983" key="GridCell.Tab.0.left" timestamp="1603095846792">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1244" height="615" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1601375477575" />
-    <state width="1244" height="615" key="GridCell.Tab.0.right" timestamp="1601375477575">
+    <state width="1921" height="983" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1603095846792" />
+    <state width="1921" height="983" key="GridCell.Tab.0.right" timestamp="1603095846792">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1244" height="615" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1601375477575" />
+    <state width="1921" height="983" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1603095846792" />
     <state width="1877" height="347" key="GridCell.Tab.1.bottom" timestamp="1599231463743">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -303,10 +310,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="161" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1596422545640" />
-    <state x="86" y="140" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1599380338588">
+    <state x="86" y="140" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1603072564207">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="86" y="140" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599380338588" />
+    <state x="86" y="140" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1603072564207" />
     <state x="1103" y="230" width="672" height="678" key="search.everywhere.popup" timestamp="1599645739327">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -314,13 +321,14 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_Softmax.coverage" NAME="BiLSTM_Softmax Coverage Results" MODIFIED="1598000123764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
-    <SUITE FILE_PATH="coverage/GraduateDesign$Statistics.coverage" NAME="Statistics Coverage Results" MODIFIED="1601176488805" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$Statistics.coverage" NAME="Statistics Coverage Results" MODIFIED="1603082909085" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Seq2Seq_Train.coverage" NAME="Seq2Seq_Train Coverage Results" MODIFIED="1597823864880" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Train.coverage" NAME="Train Coverage Results" MODIFIED="1596968345937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
-    <SUITE FILE_PATH="coverage/GraduateDesign$IDCNN_CRF_Train.coverage" NAME="IDCNN_CRF_Train Coverage Results" MODIFIED="1601375239946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$IDCNN_CRF_Train.coverage" NAME="IDCNN_CRF_Train Coverage Results" MODIFIED="1603082595320" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$CNN_BiLSTM_CRF.coverage" NAME="CNN_BiLSTM_CRF Coverage Results" MODIFIED="1598522198362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$BiLSTM_CRF.coverage" NAME="BiLSTM_CRF Coverage Results" MODIFIED="1596616849294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$TCN.coverage" NAME="TCN Coverage Results" MODIFIED="1598185634127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
+    <SUITE FILE_PATH="coverage/GraduateDesign$Weibo_Message_Extraction.coverage" NAME="Weibo_Message_Extraction Coverage Results" MODIFIED="1603095846772" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Seq2Seq.coverage" NAME="Seq2Seq Coverage Results" MODIFIED="1597646040992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
     <SUITE FILE_PATH="coverage/GraduateDesign$Models.coverage" NAME="Models Coverage Results" MODIFIED="1595584222636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/GraduateDesign$VictorySequenceModel.coverage" NAME="VictorySequenceModel Coverage Results" MODIFIED="1598521343658" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Model" />
